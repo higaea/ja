@@ -1,0 +1,5 @@
+1. Instagram graph api can only access business account's media
+2. OLD Instagram API has been deprecated already
+3. Ideally, we could get notification when a user mention us on a photo. But not sure if we could get the photo url and not sure if we could post comments on it (Doc says we could post comments)
+4. Cannot post new photo on our own account. The api is only available to partners
+5. FB login API can only login with FB user, not IG user

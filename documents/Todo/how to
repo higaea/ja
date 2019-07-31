@@ -1,0 +1,27 @@
+###Tech Requirement
+    1. how to get user's different permissions
+    2. instagram_content_publish is only available for IG partner? 
+        Yes, it's only avaialbe for IG partner. Not sure if we could apply for the partner relationship.
+    3. Try to apply a IG partner
+
+
+###TODO list
+1. set up a webhook to notifications for testing
+2. set up a few dev account to test IG app
+3. use a app in dev account
+4. go through facebook login doc
+5. how to use the app in FB, IG? Is it a Website or Smart Phone App?, or is it a FB Tab? or is it a FB tool in FB page?
+6. What if user only has a IG account. In such case, could the user use FB login API???
+
+
+### Need to discuss
+1. a CA signed certificate (done)
+2. login using FB account, IG account?
+3. use case? How to use the H5, app?
+    A. Users visit our H5 or website, and login with facebook(or IG account???)
+    B. During login with their facebook account, they will be asked to grant for a few permissions. After they login, we could get thier access_token.
+    C. Users go to their IG, post a photo, and @Jarton in comments or caption.
+    D. Our app webhook gets the notifications and retrieve the Photo ID.
+    E. We use facebook Graph API with Photo ID and access_token to get the Photo url
+    F. Use AI to caption the Photo and get the caption result.
+    G. We use facebook Graph API to post a comment on User's photo with the caption result.

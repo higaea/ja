@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+      <meta name="viewport" content="width=device-width, initial-scale=1"> 
+      <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+      <link rel="stylesheet" type="text/css" href="css/viewer.css" />
+      <link rel="stylesheet" type="text/css" href="css/fxfullwidth.css" />
+      <script src="js/modernizr.custom.js"></script>
+  </head>
+  <body>
+    <p>Hello JA</p>
+    <div
+        class="fb-like"
+        data-share="true"
+        data-width="450"
+        data-show-faces="true">
+    </div>
+    <script>
+      window.addEventListener('DOMContentLoaded', function (){
+        var documentElement = document.documentElement;  
+        if (documentElement.requestFullscreen) {  
+            documentElement.requestFullscreen();  
+        } else if (documentElement.mozRequestFullScreen) {  
+            documentElement.mozRequestFullScreen();  
+        } else if (documentElement.webkitRequestFullScreen) {  
+            documentElement.webkitRequestFullScreen();  
+        }
+      });
+    </script>
+    <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId      : '2312633112398337',
+            xfbml      : true,
+            version    : 'v3.3'
+          });
+          FB.AppEvents.logPageView();
+        };
+      
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <script src="js/classie.js"></script>
+    <script src="js/viewer.js"></script>
+  </body>
+</html>
