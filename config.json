@@ -1,0 +1,15 @@
+{
+    "serverConfig": {
+        "signupUrl": "/user/signup",
+        "loginUrl": "/user/login",
+        "verifyUrl": "/user/verify",
+        "logoutUrl": "/user/logout",
+        "imageUrl": "/image",
+        "databaseUrl": "mongodb://localhost:27017/user"
+    },
+    "imageConfig": {
+        "type": ["jpg", "png", "jpeg"],
+        "min_size": 51200,
+        "max_size": 5242880
+    }
+}

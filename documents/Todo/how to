@@ -25,3 +25,8 @@
     E. We use facebook Graph API with Photo ID and access_token to get the Photo url
     F. Use AI to caption the Photo and get the caption result.
     G. We use facebook Graph API to post a comment on User's photo with the caption result.
+
+
+### Need Discuss
+1. how to display the images in screens? use the existing client or use jarton.cn?
+
