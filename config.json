@@ -4,12 +4,25 @@
         "loginUrl": "/user/login",
         "verifyUrl": "/user/verify",
         "logoutUrl": "/user/logout",
-        "imageUrl": "/image",
+        "imageUrl": "/image/:uid",
+        "userImageUrl": "/user/:uid/images",
+        "captionUrl": "/caption/:imageId",
+        "instagramGetMediaUrl": "/instagram/media",
+        "instagramPostCommentUrl": "/instagram/comment",
+
         "databaseUrl": "mongodb://localhost:27017/user"
+        
     },
     "imageConfig": {
         "type": ["jpg", "png", "jpeg"],
         "min_size": 51200,
         "max_size": 5242880
+    },
+    "instagramConfig": {
+        "accessToken": "EAAg3U9spCgEBAMdxvu9YZAkGKJJG67e0AdLd1pXyiHgrDLC0kGZAC3clyKU0I3UMwu0AbtOKtC76sO9q8E2NCUCjuLRBHKU5pHp9aDSKBSHRsBBfCLfGKzhL2D1hyW8nZBWwl9ZBi6qTZBOvZApL1uuz6fTm93pPy3FZBeW7ePLIgZDZD",
+        "jartonPageId": "108544473825677",
+        "jaBusinessAccountId": "17841416927087202",
+        "getMediaListUrl": "https://graph.facebook.com/v4.0/17841416927087202/media?access_token=",
+        "postCommentOnMediaUrl": "https://graph.facebook.com/v3.2/:media_id/comments"
     }
 }

@@ -2,11 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ImageSchema = new Schema({
-    uuid: {
-        type: uuid
+    image_id: {
+        type: String,
+        unique: true,
+        require: true
     },
-    userUuid: {
-        type: uuid
+    user_id: {
+        type: String,
+        require: true
     },
     url: {
         type: String
@@ -15,3 +18,5 @@ const ImageSchema = new Schema({
         type: String
     }
 });
+
+module.exports = mongoose.model('Image', ImageSchema);

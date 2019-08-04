@@ -6,7 +6,7 @@ curl -i -X GET \
  2. get page's IG business account
  curl -i -X GET \
  "https://graph.facebook.com/v3.2/2599907546710666?fields=instagram_business_account&access_token=EAAg3U9spCgEBAKuFlT2N2hV8KrwpPh66MM7zUwjLMBt6V62bXLti14X7wqJZBizZAHXUHfv9vA5lKbC7LLQDu2F79ICscNhirR11D19R8kTmoJYDQ9hVsvXb3IRPA1LxKDZB3zrtQcAcZCbFzo8AqY1FVc6Cu28O8wdBtbqzhlRhBwsZBRUmMndUJVnI06tgEaOicM62TiAZDZD"
-
+    
 3. get IG business account's Media Objects
 curl -i -X GET \
  "https://graph.facebook.com/v3.2/17841416379689860/media?access_token=EAAg3U9spCgEBAE05mcano8EpEVkZBOBZClHoXwC4YayWqNcZAlqA02joUD6SvINRzCmoGU3KRDhIt94coR20ZCLZB6HuIjLRlE7LcCyNfKnH3068CMN1ov68L9qgmGgtfzohyPkcg3CvAmSVHUwc6WpFfEdYs9gM2Y65l7IgEWUZC3KemmcmZAucOBayPEQZAdL8gevG6ZCao0gZDZD"

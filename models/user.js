@@ -13,6 +13,11 @@ const UserSchema = new Schema({
         type: String,
         require: true
     },
+    user_id: {
+        type: String,
+        unique: true,
+        require: true
+    },
     phone_number: {
         type: String
     },

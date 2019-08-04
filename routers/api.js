@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const multer = require('multer');
 // const fileType = require('file-type');
+const request = require('request');
 const User = require('../models/user');
+const Image = require('../models/image');
 
 const config = require('../config.json');
 // const upload = multer({dest: 'upload'});
@@ -26,6 +28,7 @@ var tokenType = "Bearer ";
 
 var serverConfig = config.serverConfig;
 var imageConfig = config.imageConfig;
+var instagramConfig = config.instagramConfig;
 
 var storage = multer.diskStorage({
     //upload path
@@ -68,7 +71,8 @@ router.post(serverConfig.signupUrl, (req, res) => {
     } else {
         var user = new User({
             name: req.body.name,
-            password: req.body.password
+            password: req.body.password,
+            user_id: makeid(16)
         });
 
         user.save((err) => {
@@ -136,15 +140,83 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
     //create an image record and save into mongo db
     //how to query all the images belonging to one user?
 
+    // var userId = req.query.user_id;
+    // User.findOne({user_id: userId}).then(user => {
+        
+    // });
 
-    console.log(image.mimetype);
-    console.log(image.originalname);
-    console.log(image.size);
-    console.log(image.path);
-    res.json({success: true});
+    //TODO need to verify the uid is the same as the token one
+
+    console.log(req.params.uid);
+    var image = new Image({
+        image_id: makeid(16),
+        user_id: req.params.uid,
+        url: image.path
+    });
+
+    image.save((err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({ success: false, message: 'Image uploading failed' });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: 'Image uploading succeed.',
+        });
+    });
+
+    // console.log(image.mimetype);
+    // console.log(image.originalname);
+    // console.log(image.size);
+    // console.log(image.path);
 });
 
-router.get(serverConfig.imageUrl, (req, res) => {
+router.get(serverConfig.userImageUrl, (req, res) => {
+    var userId = req.params.uid;
+    Image.find({user_id: userId}, (err, images) => {
+        if(err) {
+            console.log(err);
+            return res.status(500).send({ success: false, message: 'Image query failed' });
+        }
+
+        var userImages = [];
+        images.forEach(image => {
+            userImages.push(image.url);
+        });
+
+        res.status(200).send({
+            success: true,
+            urls: userImages
+        });
+
+    });
+});
+
+router.post(serverConfig.instagramPostCommentUrl, (req, res) => {
+    var comment = req.body.comment;
+    var media_id = req.body.media_id;
+    var igRequestUrl = instagramConfig.postCommentOnMediaUrl.replace(":media_id", media_id);
+    var paramObject = {
+        message: comment,
+        access_token: instagramConfig.accessToken
+    };
+    request.post({
+        url: igRequestUrl,
+        qs: paramObject
+    }, (err, resp, body) => {
+        if(err) {
+            console.log(err);
+            res.send({
+                success: false,
+                message: "Failed to post comments to IG"
+            });
+        }
+        res.send({
+            success: true,
+            message: "Comments posting succeed"
+        });
+    });
 
 });
 
