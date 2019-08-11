@@ -30,3 +30,32 @@
 ### Need Discuss
 1. how to display the images in screens? use the existing client or use jarton.cn?
 
+目前facebook开发平台的公司认证进度比较慢，已经提交了两周，还没有完成
+另外开发的app也需要facebook的审核才能使用用户的相应权限。
+目前从开发者社区上看到用户权限使用的审核可能更慢一些。
+还有就是Instagram目前没有发送照片的API，只有beta版，针对内部partner做公测，没有对外开放。
+基于这些限制，目前要和Instagram用户互动，可行的方案是这样的，大家看一下：
+1. Instagram用户扫码关注公司账号
+2. 我们在Instagram公司账号上面发帖子，说明活动规则，提供上传图片的链接
+3. Instagram用户登录链接，用自己ID完成注册，上传照片
+4. 照片审核后，系统完成图片Caption，
+5. 后台系统在上面的帖子的评论处，@图片的用户，提供caption内容
+
+
+
+1. 梳理整体流程
+2. 后台服务架构图，docker+k8s
+3. 接口结构定义
+4. 图片上传，展示的效率问题
+5. 图片存贮位置，CDN，云？
+
+1. need to make whole photo flow work
+2. whether caption docker provides ws or restful API to upload the photo, and get the caption result?
+3. asynchronizely calls caption server
+4. image service(upload image, audit image and trigger worker service), worker service (triggered by image service, and calls caption service, and poll the result)
+    caption service, user service(user login, return user's images list). 
+
+1. need to create an endpoint to set instagram access_token to server
+2. need to create an endpoint to get the media object from instagram
+3. need to test the performance of update image API, make multiple request at the same time
+4. need a timer to poll the database, find all the records with imageCaptionId but without caption, and try to get caption again

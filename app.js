@@ -10,7 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const api = require('./routers/api');
+const api = require('./routes/api');
 const config = require('./config.json');
 
 var options = {

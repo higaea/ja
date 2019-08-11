@@ -3,3 +3,13 @@
 3. Ideally, we could get notification when a user mention us on a photo. But not sure if we could get the photo url and not sure if we could post comments on it (Doc says we could post comments)
 4. Cannot post new photo on our own account. The api is only available to partners
 5. FB login API can only login with FB user, not IG user
+
+
+
+
+###
+neuraltalk2-web docker will get crashed when using rest API (addURL) to invoke caption and the url provided is not reachable?
+
+
+
+

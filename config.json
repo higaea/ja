@@ -4,7 +4,7 @@
         "loginUrl": "/user/login",
         "verifyUrl": "/user/verify",
         "logoutUrl": "/user/logout",
-        "imageUrl": "/image/:uid",
+        "imageUrl": "/image",
         "userImageUrl": "/user/:uid/images",
         "captionUrl": "/caption/:imageId",
         "instagramGetMediaUrl": "/instagram/media",
@@ -24,5 +24,9 @@
         "jaBusinessAccountId": "17841416927087202",
         "getMediaListUrl": "https://graph.facebook.com/v4.0/17841416927087202/media?access_token=",
         "postCommentOnMediaUrl": "https://graph.facebook.com/v3.2/:media_id/comments"
+    },
+    "captionConfig": {
+        "captionRequestUrl": "http://www.jarton.cn:5000/addurl",
+        "captionResultUrl": "http://www.jarton.cn:5000/caption/:image_caption_id"
     }
 }
