@@ -108,7 +108,7 @@ router.get(serverConfig.loginUrl, (req, res) => {
                 res.status(200).json({
                     success: true,
                     message: 'login complete',
-                    userId: user._id,
+                    userId: user.user_id,
                     "token": token
                 });
             } else {
@@ -233,7 +233,7 @@ router.get(serverConfig.userImageUrl, (req, res) => {
 router.get(serverConfig.imageDetails, (req, res) => {
     var imageId = req.params.imageId;
     Image.findOne({image_id: imageId}, (err, image) => {
-        if(err) {
+        if(err || !image) {
             res.send({
                 success: false,
                 message: "Failed to get image detail"
@@ -242,8 +242,8 @@ router.get(serverConfig.imageDetails, (req, res) => {
             res.send({
                 success: true,
                 image: {
-                    imageId: image.url,
-                    caption: image.caption
+                    url: image.url,
+                    caption: image.caption || "This is a mocked caption"
                 }
             })
         }
@@ -269,7 +269,7 @@ router.get(serverConfig.images, (req, res) => {
                 imagesResult.push({
                     "url": image.url,
                     "uid": image.user_id,
-                    "status": image.status || "UNREVIEWED"
+                    "status": image.status || "This is a mocked status"
                 });
             });
     

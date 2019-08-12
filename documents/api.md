@@ -66,7 +66,7 @@ response:
     {
         "success": true,
         "image" : {
-            "imageUrl": url
+            "url": url
             "caption": String
             ...
         }
