@@ -34,7 +34,7 @@ var captionConfig = config.captionConfig;
 var storage = multer.diskStorage({
     //upload path
     destination: function (req, file, cb) {
-        cb(null, './public/uploads')
+        cb(null, './public/images')
     },
     //rename image
     filename: function (req, file, cb) {
@@ -155,7 +155,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
     // });
 
     //TODO need to verify the uid is the same as the token one
-
+    console.log(req.query);
     console.log(req.params);
     var image = new Image({
         image_id: makeid(32),
@@ -185,24 +185,132 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
 });
 
 router.get(serverConfig.userImageUrl, (req, res) => {
-    var userId = req.params.uid;
-    Image.find({user_id: userId}, (err, images) => {
+    var userId = req.query.uid;
+    var pageOptions = {
+        pageNumber: parseInt(req.query.pageNumber) || 0,
+        pageSize: parseInt(req.query.pageSize) || 10
+    }
+    Image.find({user_id: userId})
+        .skip(pageOptions.pageNumber * pageOptions.pageSize)
+        .limit(pageOptions.pageSize)
+        .exec((err, images) => {
+            if(err) {
+                console.log(err);
+                return res.status(500).send({ success: false, message: 'Image query failed' });
+            }
+    
+            var userImages = [];
+            images.forEach(image => {
+                userImages.push(image.url);
+            });
+    
+            res.status(200).send({
+                success: true,
+                urls: userImages
+            });
+    
+        });
+
+    // Image.find({user_id: userId}, (err, images) => {
+    //     if(err) {
+    //         console.log(err);
+    //         return res.status(500).send({ success: false, message: 'Image query failed' });
+    //     }
+
+    //     var userImages = [];
+    //     images.forEach(image => {
+    //         userImages.push(image.url);
+    //     });
+
+    //     res.status(200).send({
+    //         success: true,
+    //         urls: userImages
+    //     });
+
+    // });
+});
+
+router.get(serverConfig.imageDetails, (req, res) => {
+    var imageId = req.params.imageId;
+    Image.findOne({image_id: imageId}, (err, image) => {
         if(err) {
-            console.log(err);
-            return res.status(500).send({ success: false, message: 'Image query failed' });
+            res.send({
+                success: false,
+                message: "Failed to get image detail"
+            });
+        } else {
+            res.send({
+                success: true,
+                image: {
+                    imageId: image.url,
+                    caption: image.caption
+                }
+            })
         }
-
-        var userImages = [];
-        images.forEach(image => {
-            userImages.push(image.url);
-        });
-
-        res.status(200).send({
-            success: true,
-            urls: userImages
-        });
-
     });
+});
+
+router.get(serverConfig.images, (req, res) => {
+    var pageOptions = {
+        pageNumber: parseInt(req.query.pageNumber) || 0,
+        pageSize: parseInt(req.query.pageSize) || 10
+    }
+    Image.find({})
+        .skip(pageOptions.pageNumber * pageOptions.pageSize)
+        .limit(pageOptions.pageSize)
+        .exec((err, images) => {
+            if(err) {
+                console.log(err);
+                return res.status(500).send({ success: false, message: 'Image query failed' });
+            }
+    
+            var imagesResult = [];
+            images.forEach(image => {
+                imagesResult.push({
+                    "url": image.url,
+                    "uid": image.user_id,
+                    "status": image.status || "UNREVIEWED"
+                });
+            });
+    
+            res.status(200).send({
+                success: true,
+                images: imagesResult
+            });
+    
+        });
+});
+
+router.get(serverConfig.userCount, (req, res) => {
+    User.count({}, (err, cnt) => {
+        if(err) {
+            res.send({
+                success: false,
+                message: "Failed to get user count"
+            });
+        } else {
+            res.send({
+                success: true,
+                count: cnt
+            });
+        }
+    }) ;
+});
+
+router.get(serverConfig.imageCount, (req, res) => {
+    Image.count({}, (err, cnt) => {
+        if(err) {
+            res.send({
+                success: false,
+                message: "Failed to get image count"
+            });
+        } else {
+            res.send({
+                success: true,
+                count: cnt
+            });
+        }
+    }) ;
 });
 
 router.post(serverConfig.instagramPostCommentUrl, (req, res) => {

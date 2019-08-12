@@ -4,11 +4,17 @@
         "loginUrl": "/user/login",
         "verifyUrl": "/user/verify",
         "logoutUrl": "/user/logout",
-        "imageUrl": "/image",
-        "userImageUrl": "/user/:uid/images",
+        "imageUrl": "/user/image",
+        "userImageUrl": "/user/imageslist",
         "captionUrl": "/caption/:imageId",
         "instagramGetMediaUrl": "/instagram/media",
         "instagramPostCommentUrl": "/instagram/comment",
+
+        "imageDetails": "/image/:imageId",
+
+        "userCount": "/user/count",
+        "imageCount": "/image/count",
+        "images": "/image/list",
 
         "databaseUrl": "mongodb://localhost:27017/user"
         
