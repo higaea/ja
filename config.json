@@ -12,9 +12,9 @@
 
         "imageDetails": "/image/:imageId",
 
-        "userCount": "/user/count",
-        "imageCount": "/image/count",
-        "images": "/image/list",
+        "userCount": "/users/count",
+        "imageCount": "/images/count",
+        "images": "/images/list",
 
         "databaseUrl": "mongodb://localhost:27017/user"
         

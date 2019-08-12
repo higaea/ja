@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
-let port = process.env.PORT || 8080;
+let port = process.env.PORT || 80;
 
 app.use(express.static(path.join(__dirname, "/public")));
 
@@ -36,14 +36,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.serverConfig.databaseUrl);
 
 
-http.createServer(app).listen(8080, function() {
-  // var port = server.address().port;
-  console.log('Server started at port: ' + 8080);
+http.createServer(app).listen(80, function() {
+  console.log('Server started at port: ' + 80);
 });
 https.createServer(options, app).listen(443);
-
-
-// var server = app.listen(80, function(){
-//    var port = server.address().port;
-//    console.log("Server started at http://localhost:%s", port);
-// });

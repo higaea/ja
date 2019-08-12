@@ -88,7 +88,8 @@ router.post(serverConfig.signupUrl, (req, res) => {
 
             res.status(200).send({
                 success: true, 
-                message: 'Sign up succeed.',
+                message: 'Sign up completed',
+                uid: user.user_id,
                 token: token
             });
         });
@@ -106,7 +107,7 @@ router.get(serverConfig.loginUrl, (req, res) => {
                 });
                 res.status(200).json({
                     success: true,
-                    message: 'login succeed',
+                    message: 'login complete',
                     userId: user._id,
                     "token": token
                 });
@@ -173,7 +174,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
                 success: true,
                 imageId: image.image_id,
                 imageUrl: image.url,
-                message: 'Image uploading succeed.',
+                message: 'Image uploading complete.',
             });
         }
     });
@@ -197,18 +198,17 @@ router.get(serverConfig.userImageUrl, (req, res) => {
             if(err) {
                 console.log(err);
                 return res.status(500).send({ success: false, message: 'Image query failed' });
+            } else {    
+                var userImages = [];
+                images.forEach(image => {
+                    userImages.push(image.url);
+                });
+        
+                res.status(200).send({
+                    success: true,
+                    urls: userImages
+                });
             }
-    
-            var userImages = [];
-            images.forEach(image => {
-                userImages.push(image.url);
-            });
-    
-            res.status(200).send({
-                success: true,
-                urls: userImages
-            });
-    
         });
 
     // Image.find({user_id: userId}, (err, images) => {
@@ -334,7 +334,7 @@ router.post(serverConfig.instagramPostCommentUrl, (req, res) => {
         }
         res.send({
             success: true,
-            message: "Comments posting succeed"
+            message: "Comments posting complete"
         });
     });
 

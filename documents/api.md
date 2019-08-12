@@ -1,11 +1,18 @@
 1. user signup
 POST /api/user/signup
+request:
     Content-Type: application/x-www-form-urlencoded
     {
         name: String
         password: String
         role: //user:0, admin:1
     }
+response:
+    {
+    "success": true,
+    "uid": uid,
+    "token": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6InU1IiwidXNlcklkIjoiVlRQRVhqMlJFVFFsWG12c2pSUGVvaWpmM096ekxjWG8iLCJpYXQiOjE1NjU2MDc3MjgsImV4cCI6MTU2NTY5NDEyOH0.NMRMwajp76PmKA6YANpj1YXZWIdaCpSJfFxLy7X7U5z0g5fVZ1yo7kiHS-MyXRptcbtz-lMzq4OKRvXNDCgNO2VFx1TIMrBQukS2yWG-b4JzLMKVt43dBCvvqIVMP5ySeR0rW01Mal_-Sbl7n5V44tmDQeTOTGfHaTowTh3fzLXp587O6m58yRUVPKfqh7x-OMpmUz9r4OXMKgiRxkHuAxT9usvFMgC4dtVQuGcSm-v2R9xP1QG7DOHD2vY3v4C_QKFNLwwp8Gh9-wDWR4PVZLdJ16uhmQsVlGy4rIEAlAfOPacfZXa7Ro07d7W4EYWwMt-UXU-n8B1CyKcxuQvAFg"
+}
 
 2. user login
 GET /api/user/login
