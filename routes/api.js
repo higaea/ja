@@ -269,6 +269,7 @@ router.get(serverConfig.images, (req, res) => {
                 imagesResult.push({
                     "url": image.url,
                     "uid": image.user_id,
+                    "imageId": image.image_id,
                     "status": image.status || "This is a mocked status"
                 });
             });

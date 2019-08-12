@@ -83,6 +83,7 @@ response:
             {
                 "url": "/image.xxx",
                 "uid": "",
+                "imageId": "",
                 "status": ""
             }, 
             {
