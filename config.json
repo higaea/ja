@@ -15,6 +15,7 @@
         "userCount": "/users/count",
         "imageCount": "/images/count",
         "images": "/images/list",
+        "imageUpdate": "/images/review",
 
         "databaseUrl": "mongodb://localhost:27017/user"
         

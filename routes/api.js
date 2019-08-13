@@ -74,6 +74,7 @@ router.post(serverConfig.signupUrl, (req, res) => {
         var user = new User({
             name: req.body.name,
             password: req.body.password,
+            source: req.body.source,
             user_id: makeid(32)
         });
 
@@ -87,7 +88,7 @@ router.post(serverConfig.signupUrl, (req, res) => {
                 "userId": user.user_id
             });
 
-            res.status(200).send({
+            return res.status(200).send({
                 success: true, 
                 message: 'Sign up completed',
                 uid: user.user_id,
@@ -106,14 +107,15 @@ router.get(serverConfig.loginUrl, (req, res) => {
                     "userName": user.name,
                     "userId": user.user_id
                 });
-                res.status(200).json({
+                return res.status(200).json({
                     success: true,
                     message: 'login complete',
                     userId: user.user_id,
+                    source: user.source,
                     "token": token
                 });
             } else {
-                res.status(400).send({
+                return res.status(400).send({
                     success: false,
                     message: 'Invalid User Name or Password'
                 });
@@ -121,7 +123,7 @@ router.get(serverConfig.loginUrl, (req, res) => {
         });
     }).catch(err => {
         console.log(err);
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: 'Invalid User Name or Password'
         });
@@ -133,14 +135,14 @@ router.use((req, res, next) => {
     let token = req.headers.authorization;
     let validation = verifyToken(token);
     if(!validation || !validation.success) {
-        res.status(401).send({
+        return res.status(401).send({
             success: false,
             message: 'Invalid token'
         });
+    } else {
+        req.userId = validation.payLoad.userId;
+        next();
     }
-    req.userId = validation.payLoad.userId;
-
-    next();
 });
 
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
@@ -163,7 +165,9 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
         image_id: makeid(32),
         user_id: req.userId,
         // url: image.path.replace(new RegExp("\\", 'g'), "/")
-        url: image.path.split("\\").join("/")
+        url: image.path.split("\\").join("/"),
+        status: "NEW",
+        caption: "",
     });
 
     image.save((err) => {
@@ -171,7 +175,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
             console.log(err);
             return res.status(500).send({ success: false, message: 'Image uploading failed' });
         } else {
-            res.status(200).send({
+            return res.status(200).send({
                 success: true,
                 imageId: image.image_id,
                 imageUrl: image.url,
@@ -202,12 +206,17 @@ router.get(serverConfig.userImageUrl, (req, res) => {
             } else {    
                 var userImages = [];
                 images.forEach(image => {
-                    userImages.push(image.url);
+                    userImages.push({
+                        url: image.url,
+                        imageId: image.image_id,
+                        status: image.status || "NEW",
+                        caption: image.caption || "This is a mocked caption"
+                    });
                 });
         
-                res.status(200).send({
+                return res.status(200).send({
                     success: true,
-                    urls: userImages
+                    images: userImages
                 });
             }
         });
@@ -235,12 +244,12 @@ router.get(serverConfig.imageDetails, (req, res) => {
     var imageId = req.params.imageId;
     Image.findOne({image_id: imageId}, (err, image) => {
         if(err || !image) {
-            res.send({
+            return res.send({
                 success: false,
                 message: "Failed to get image detail"
             });
         } else {
-            res.send({
+            return res.send({
                 success: true,
                 image: {
                     url: image.url,
@@ -250,6 +259,36 @@ router.get(serverConfig.imageDetails, (req, res) => {
         }
     });
 });
+
+router.put(serverConfig.imageUpdate, (req, res) => {
+    var images = req.body.images;
+    let promiseArr = [];
+    images.forEach(image => promiseArr.push(updateImage(image)));
+
+    Promise.all(promiseArr).then(result => {
+        return res.send({
+            success: true,
+            message: "Update images complete"
+        });
+    })
+    .catch(err => {
+        return res.status(500).send({
+            success: false,
+            message: "Failed to update image"
+        });
+    });
+
+
+});
+
+function updateImage(image) {
+    return new Promise((resolve, reject) => {
+        Image.findOneAndUpdate({"image_id": image.imageId}, {"url": image.status}, { upsert: false })
+            .then(result => resolve())
+            .catch(err => reject(err))
+    });
+ }
+
 
 router.get(serverConfig.images, (req, res) => {
     var pageOptions = {
@@ -275,7 +314,7 @@ router.get(serverConfig.images, (req, res) => {
                 });
             });
     
-            res.status(200).send({
+            return res.status(200).send({
                 success: true,
                 images: imagesResult
             });
@@ -286,12 +325,12 @@ router.get(serverConfig.images, (req, res) => {
 router.get(serverConfig.userCount, (req, res) => {
     User.count({}, (err, cnt) => {
         if(err) {
-            res.send({
+            return res.send({
                 success: false,
                 message: "Failed to get user count"
             });
         } else {
-            res.send({
+            return res.send({
                 success: true,
                 count: cnt
             });
@@ -302,12 +341,12 @@ router.get(serverConfig.userCount, (req, res) => {
 router.get(serverConfig.imageCount, (req, res) => {
     Image.count({}, (err, cnt) => {
         if(err) {
-            res.send({
+            return res.send({
                 success: false,
                 message: "Failed to get image count"
             });
         } else {
-            res.send({
+            return res.send({
                 success: true,
                 count: cnt
             });
@@ -329,12 +368,12 @@ router.post(serverConfig.instagramPostCommentUrl, (req, res) => {
     }, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
             console.log(err);
-            res.send({
+            return res.send({
                 success: false,
                 message: "Failed to post comments to IG"
             });
         }
-        res.send({
+        return res.send({
             success: true,
             message: "Comments posting complete"
         });
@@ -353,7 +392,7 @@ router.post("/caption", (req, res) => {
                     if(err) {
                         console.log(err);
                         console.log("Failed to update image " + image.image_id + " with captionId");
-                        res.send({
+                        return res.send({
                             success: false,
                             message: "Failed to save image caption id"
                         });
@@ -369,7 +408,7 @@ router.post("/caption", (req, res) => {
                             if(err) {
                                 console.log(err);
                                 console.log("Failed to update image " + image.image_id + " with caption");
-                                res.send({
+                                return res.send({
                                     success: false,
                                     message: "Failed to update image"
                                 });
@@ -377,10 +416,10 @@ router.post("/caption", (req, res) => {
                         });
                     });
                 }
-                res.send(r);
+                return res.send(r);
             });
         } else {
-            res.send(reqResult);
+            return res.send(reqResult);
         }
     });
     console.log("in caption...");

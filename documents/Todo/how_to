@@ -55,7 +55,15 @@
 4. image service(upload image, audit image and trigger worker service), worker service (triggered by image service, and calls caption service, and poll the result)
     caption service, user service(user login, return user's images list). 
 
-1. need to create an endpoint to set instagram access_token to server
+1. need to create an endpoint to set instagram access_token to server, or update the access_token automatically?:w
 2. need to create an endpoint to get the media object from instagram
 3. need to test the performance of update image API, make multiple request at the same time
 4. need a timer to poll the database, find all the records with imageCaptionId but without caption, and try to get caption again
+
+
+1. image status change: new --> reviewed --> captioning --> captioned --> deleted
+2. image should have createdOn, updatedOn
+3. start a timer to get all the reviewed images, and request nn to caption. After caption is ready, callback is invoked and update the images's status and caption
+4. always return image id, status, caption, url when getuserimages api is called
+5. user should have a column to indicate whether it's from instagram. (TODO: need to handle the situation that instagram user name is used by other user?)
+6.

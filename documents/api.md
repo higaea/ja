@@ -1,3 +1,5 @@
+All APIs can be called from https://www.jarton.cn/
+
 1. user signup
 POST /api/user/signup
 request:
@@ -122,7 +124,7 @@ response:
         "count": 5
     }
 9. update image // used to review image and delete image
-PUT /api/image/review
+PUT /api/images/review
 header:
     Authorization: token //need admin user
 request:
