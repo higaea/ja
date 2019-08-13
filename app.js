@@ -1,6 +1,9 @@
 
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
+app.use(helmet());
+
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
@@ -24,7 +27,8 @@ app.use(morgan('dev'));
 
 let port = process.env.PORT || 8080;
 
-app.use(express.static(path.join(__dirname, "/public")));
+app.use("/", express.static(path.join(__dirname, "/public")));
+app.use("/public/images", express.static(path.join(__dirname, "/public/images")));
 
 // app.get('/', (req, res) => {
 //     res.json({message: 'Hi, how can I help you?'});

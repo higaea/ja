@@ -5,6 +5,7 @@ request:
     {
         name: String
         password: String
+        source: Int //0: none, 1: wechat, 2: instagram
         role: //user:0, admin:1
     }
 response:
@@ -20,6 +21,7 @@ request:
     {
         name: String
         password: String
+        source: Int //0: none, 1: wechat, 2: instagram
     }
 response:
     {
@@ -53,8 +55,13 @@ header:
 response:
     {
         "success": true,
-        "urls": [
-            "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG"
+        "images": [
+                {
+                        "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
+                        "imageId": "",
+                        "status": "", //new, viewed, captioning, captioned, deleted
+                        "caption": ""
+                }
         ]
     }
 
@@ -66,10 +73,11 @@ response:
     {
         "success": true,
         "image" : {
-            "url": url
-            "caption": String
-            ...
-        }
+                        "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
+                        "imageId": "",
+                        "status": "", //new, viewed, captioning, captioned, deleted
+                        "caption": ""
+                }
     }
 
 6. get images
@@ -79,15 +87,19 @@ header:
 response:
     {
         "success": true
-        [
-            {
-                "url": "/image.xxx",
-                "uid": "",
-                "imageId": "",
-                "status": ""
-            }, 
-            {
-            }
+        "images": [
+                    {
+                        "uid": "",
+                        "userSource": "" //0: none, 1: wechat, 2: instagram
+                        "userName": "" // need this?
+                        "url": "/image.xxx",
+                        "imageId": "",
+                        "caption": "",
+                        "status": ""
+                    },
+                    {
+                    }
+                ]               
     }
 
 7. get user count
@@ -109,3 +121,20 @@ response:
         "succes": true,
         "count": 5
     }
+9. update image // used to review image and delete image
+PUT /api/image/review
+header:
+    Authorization: token //need admin user
+request:
+        {
+            "images": [
+                        {
+                            "imageId": "",
+                            "status": "" //reviewed, deleted
+                        }
+                    ] 
+        }
+response:
+        {
+            "success": true
+        }
