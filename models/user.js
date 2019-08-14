@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
+    user_id: {
+        type: String,
+        unique: true,
+        require: true
+    },
     name: {
         type: String,
         unique: true,
@@ -13,10 +18,8 @@ const UserSchema = new Schema({
         type: String,
         require: true
     },
-    user_id: {
-        type: String,
-        unique: true,
-        require: true
+    source: {
+        type: String
     },
     phone_number: {
         type: String
@@ -30,11 +33,11 @@ const UserSchema = new Schema({
     token_status: {
         type: String
     },
-    create_date: {
-        type: Date
+    created: {
+        type: Date, default: Date.now
     },
-    update_date: {
-        type: Date
+    updated: {
+        type: Date, default: Date.now
     }
 });
 

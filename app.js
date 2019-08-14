@@ -13,6 +13,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+const winston = require('./config/winston');
 const api = require('./routes/api');
 const config = require('./config.json');
 
@@ -23,16 +24,13 @@ var options = {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
+app.use(morgan('dev', { stream: winston.stream }));
 
 let port = process.env.PORT || 8080;
 
 app.use("/", express.static(path.join(__dirname, "/public")));
 app.use("/public/images", express.static(path.join(__dirname, "/public/images")));
-
-// app.get('/', (req, res) => {
-//     res.json({message: 'Hi, how can I help you?'});
-// })
 
 app.use('/api', api);
 

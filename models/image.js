@@ -19,6 +19,15 @@ const ImageSchema = new Schema({
     },
     caption: {
         type: String
+    },
+    status: {
+        type: String
+    },
+    created: {
+        type: Date, default: Date.now
+    },
+    updated: {
+        type: Date, default: Date.now
     }
 });
 

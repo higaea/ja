@@ -9,6 +9,7 @@
   "author": "DD",
   "license": "ISC",
   "dependencies": {
+    "app-root-path": "^2.2.1",
     "bcrypt": "^3.0.6",
     "body-parse": "^0.1.0",
     "body-parser": "^1.19.0",
@@ -22,6 +23,7 @@
     "multer": "^1.4.2",
     "mysql": "^2.17.1",
     "path": "^0.12.7",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "winston": "^3.2.1"
   }
 }

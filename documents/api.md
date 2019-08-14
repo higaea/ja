@@ -3,7 +3,7 @@ All APIs can be called from https://www.jarton.cn/
 1. user signup
 POST /api/user/signup
 request:
-    Content-Type: application/x-www-form-urlencoded
+    Content-Type: application/json
     {
         name: String
         password: String

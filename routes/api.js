@@ -72,10 +72,11 @@ router.post(serverConfig.signupUrl, (req, res) => {
             message: 'User name or password cannot be empty.'});
     } else {
         var user = new User({
+            user_id: makeid(32),
             name: req.body.name,
             password: req.body.password,
             source: req.body.source,
-            user_id: makeid(32)
+            created: Date.now()
         });
 
         user.save((err) => {
@@ -168,6 +169,8 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
         url: image.path.split("\\").join("/"),
         status: "NEW",
         caption: "",
+        created: Date.now(),
+        updated: Date.now()
     });
 
     image.save((err) => {
@@ -283,7 +286,7 @@ router.put(serverConfig.imageUpdate, (req, res) => {
 
 function updateImage(image) {
     return new Promise((resolve, reject) => {
-        Image.findOneAndUpdate({"image_id": image.imageId}, {"url": image.status}, { upsert: false })
+        Image.findOneAndUpdate({"image_id": image.imageId}, {"url": image.status, updated: Date.now()}, { upsert: false })
             .then(result => resolve())
             .catch(err => reject(err))
     });
