@@ -21,13 +21,17 @@ const ImageSchema = new Schema({
         type: String
     },
     status: {
-        type: String
+        type: String //1:NEW, 2:VIEWED, 3:CAPTIONING, 4:CAPTIONED, 5:DELETED 
     },
     created: {
         type: Date, default: Date.now
     },
     updated: {
         type: Date, default: Date.now
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

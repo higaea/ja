@@ -25,7 +25,7 @@ var options = {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 // app.use(morgan('dev'));
-app.use(morgan('dev', { stream: winston.stream }));
+app.use(morgan('combined', { stream: winston.stream }));
 
 let port = process.env.PORT || 8080;
 

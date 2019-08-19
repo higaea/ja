@@ -11,7 +11,6 @@ const UserSchema = new Schema({
     },
     name: {
         type: String,
-        unique: true,
         require: true
     },
     password: {
@@ -28,9 +27,6 @@ const UserSchema = new Schema({
         type: String
     },
     role: {
-        type: String
-    },
-    token_status: {
         type: String
     },
     created: {
@@ -60,6 +56,8 @@ UserSchema.pre('save', function(next) {
         return next();
     }
 });
+
+UserSchema.index({name: 1, source: 1}, {unique: true});
 
 UserSchema.methods.comparePassword = function(password, cb) {
     bcrypt.compare(password, this.password, (err, isMatch) => {

@@ -4,20 +4,22 @@
         "loginUrl": "/user/login",
         "verifyUrl": "/user/verify",
         "logoutUrl": "/user/logout",
+
+        "userDetailUrl": "/user/detail",
+        
         "imageUrl": "/user/image",
-        "userImageUrl": "/user/imageslist",
+        "userImageUrl": "/user/images/list",
         "captionUrl": "/caption/:imageId",
         "instagramGetMediaUrl": "/instagram/media",
         "instagramPostCommentUrl": "/instagram/comment",
 
         "imageDetails": "/image/:imageId",
 
-        "userCount": "/users/count",
-        "imageCount": "/images/count",
+        "usersInfo": "/users/info",
         "images": "/images/list",
-        "imageUpdate": "/images/review",
+        "imageUpdate": "/images/update",
 
-        "databaseUrl": "mongodb://localhost:27017/user"
+        "databaseUrl": "mongodb://localhost:27017/ja"
         
     },
     "imageConfig": {

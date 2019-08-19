@@ -66,4 +66,18 @@
 3. start a timer to get all the reviewed images, and request nn to caption. After caption is ready, callback is invoked and update the images's status and caption
 4. always return image id, status, caption, url when getuserimages api is called
 5. user should have a column to indicate whether it's from instagram. (TODO: need to handle the situation that instagram user name is used by other user?)
-6.
+6. introduce redis to cache all the user name and user source, so that we don't need query mongo for each request. Redis key is name_source.
+7. sort image list by updatedOn order by desc
+8. create a docker for app
+9. ali oos? image service to process images?
+10. a main page to display images randamly in real time?
+
+
+1. user count, image count, 
+2. admin: images list, new / created 
+3. admin: update image status
+4. user images list, only captioned images//TODO user's images first, then other users images
+5. image details
+6. image upload
+7. use openid/instagram username to get user details including source.
+

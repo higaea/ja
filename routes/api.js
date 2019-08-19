@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const multer = require('multer');
@@ -10,7 +11,6 @@ const User = require('../models/user');
 const Image = require('../models/image');
 
 const config = require('../config.json');
-// const upload = multer({dest: 'upload'});
 
 var header = {
     "alg": "RS256",
@@ -31,6 +31,8 @@ var serverConfig = config.serverConfig;
 var imageConfig = config.imageConfig;
 var instagramConfig = config.instagramConfig;
 var captionConfig = config.captionConfig;
+var imageStatusArray = ["1", "2", "3", "4", "5"];
+var sourceArray = ["0", "1", "2"];
 
 var storage = multer.diskStorage({
     //upload path
@@ -65,12 +67,30 @@ var upload = multer({
     
 });
 
+//not used
 router.post(serverConfig.signupUrl, (req, res) => {
+    req.body.password = 'dummypwd'; //delete this line
     if(!req.body.name || !req.body.password) {
-        res.status(401).send({
+        return res.status(401).send({
             success: false, 
             message: 'User name or password cannot be empty.'});
     } else {
+        User.count({name: req.body.name}, {source: req.body.source}, (err, cnt) => {
+            if(err) {
+                return res.status(500).send({
+                    success: false,
+                    message: 'User Signup failed, please try later'
+                });
+            } else {
+                if(cnt > 0) {
+                    return res.send({
+                        success: false,
+                        message: 'User name already exists, please use another name'
+                    });
+                }
+            }
+        });
+
         var user = new User({
             user_id: makeid(32),
             name: req.body.name,
@@ -92,16 +112,16 @@ router.post(serverConfig.signupUrl, (req, res) => {
             return res.status(200).send({
                 success: true, 
                 message: 'Sign up completed',
-                uid: user.user_id,
-                token: token
+                uid: user.user_id
             });
         });
     }
 });
 
-
+//not used
 router.get(serverConfig.loginUrl, (req, res) => {
-    User.findOne({name: req.body.name}).then(user => {
+    req.body.password = 'dummypwd'; //delete this line
+    User.findOne({name: req.body.name, source: req.body.source}).then(user => {
         user.comparePassword(req.body.password, (err, isMatch) => {
             if(isMatch) {
                 var token = generateToken({
@@ -112,13 +132,12 @@ router.get(serverConfig.loginUrl, (req, res) => {
                     success: true,
                     message: 'login complete',
                     userId: user.user_id,
-                    source: user.source,
-                    "token": token
+                    source: user.source
                 });
             } else {
                 return res.status(400).send({
                     success: false,
-                    message: 'Invalid User Name or Password'
+                    message: 'Invalid User Name'
                 });
             }
         });
@@ -131,46 +150,144 @@ router.get(serverConfig.loginUrl, (req, res) => {
     });
 });
 
-//verifyToken
+// verifyToken
+//check and create user
 router.use((req, res, next) => {
-    let token = req.headers.authorization;
-    let validation = verifyToken(token);
-    if(!validation || !validation.success) {
-        return res.status(401).send({
+    // let token = req.headers.authorization;
+    // let validation = verifyToken(token);
+    // if(!validation || !validation.success) {
+    //     return res.status(401).send({
+    //         success: false,
+    //         message: 'Invalid token'
+    //     });
+    // } else {
+    //     req.userId = validation.payLoad.userId;
+    //     next();
+    // }
+
+    //TODO get openid from cookie and check whether is from wechat
+
+    // var userId = req.cookies.userId;
+    // res.cookie('userId', user.user_id, {
+    //     // httpOnly: true,
+    //     // domain: jarton.cn,
+    //     maxAge: 1000*60*60*24*7
+    // });
+    
+    var userId = req.query.userId;
+    var userSource = req.query.source || 2;
+    if(!userId) {
+        return res.status(400).send({
             success: false,
-            message: 'Invalid token'
+            message: 'User Id cannot be empty'
         });
-    } else {
-        req.userId = validation.payLoad.userId;
-        next();
     }
+    if(!sourceArray.includes(userSource)) {
+        return res.status(400).send({
+            success: false,
+            message: 'Source could only be 0, 1 ,2'
+        });
+    }
+    User.findOne({user_id: userId}, (err, user) => {
+        if(err) {
+            return res.status(500).send({
+                success: false,
+                message: 'Failed to process request, try again later'
+            });
+        } else {
+            if(!user) {
+                //only instagram user goes to here. wechat user should be created during wechat authentication
+                var user = new User({
+                    user_id: userId, //instagram userId is the same as userName. For wechat, use openid
+                    name: userId,
+                    password: 'dummypwd',
+                    source: userSource || 'none',
+                    created: Date.now()
+                });
+                user.save((err) => {
+                    if(err) {
+                        console.log(err);
+                        return res.status(500).send({
+                            success: false, 
+                            message: 'Failed to process request, try again later'
+                        });
+                    } else {
+                        req.userName = user.name;
+                        req.userId = user.user_id;
+                        req.user = user._id;
+                        req.isAdmin = (user.role == 1);
+                        
+                        next();
+                    }
+                });
+            } else {
+                if(user.source != userSource) {
+                    return res.send({
+                        success: false,
+                        message: "User Id already exists"
+                    });
+                } else {
+                    req.userName = user.name;
+                    req.userId = user.user_id;
+                    req.user = user._id;
+                    req.isAdmin = (user.role == 1);
+                    
+                    next();
+                }
+            }
+        }
+    });
 });
 
+//get user detail
+router.get(serverConfig.userDetailUrl, (req, res, err) => {
+    var userId = req.userId;
+    if(!userId) {
+        return res.status(400).send({
+            success: false,
+            message: "User Id cannot be empty"
+        });
+    }
+    User.findOne({user_id: userId}, (err, user) => {
+        if(err) {
+            return res.status(500).send({
+                success: false,
+                message: "Failed to get image detail, try again later"
+            });
+        } else {
+            if(!user) {
+                return res.send({
+                    success: false,
+                    message: "Cannot find the user"
+                });
+            } else {
+                return res.send({
+                    success: true,
+                    user: {
+                        name: user.name,
+                        source: user.source
+                    }
+                });
+            }
+        }
+    });
+});
+
+//upload image
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
     var image = req.file;
-    //get user name from http param, 
-    //compare with token, verify token, get payload and get user name or user uuid?
-    //findone from db, 
-    //create an image record and save into mongo db
-    //how to query all the images belonging to one user?
-
-    // var userId = req.query.user_id;
-    // User.findOne({user_id: userId}).then(user => {
-        
-    // });
-
-    //TODO need to verify the uid is the same as the token one
+    
     console.log(req.query);
     console.log(req.params);
     var image = new Image({
         image_id: makeid(32),
         user_id: req.userId,
-        // url: image.path.replace(new RegExp("\\", 'g'), "/")
         url: image.path.split("\\").join("/"),
-        status: "NEW",
+        status: "1",
         caption: "",
         created: Date.now(),
-        updated: Date.now()
+        updated: Date.now(),
+        user: req.user
     });
 
     image.save((err) => {
@@ -186,22 +303,75 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
             });
         }
     });
-
-    // console.log(image.mimetype);
-    // console.log(image.originalname);
-    // console.log(image.size);
-    // console.log(image.path);
 });
 
+//TODO fix this ugly pagination
+//get user images + all other images
 router.get(serverConfig.userImageUrl, (req, res) => {
-    var userId = req.query.uid;
+    var userId = req.userId;
     var pageOptions = {
         pageNumber: parseInt(req.query.pageNumber) || 0,
         pageSize: parseInt(req.query.pageSize) || 10
     }
-    Image.find({user_id: userId})
+
+    var q1 = Image.find({user_id: userId, status: '4'})
+                .sort({created: -1})
+                .populate({path: 'user', select: {name: 1, source: 1}});
+    var q2 = Image.find({user_id: {$ne: userId}, status: '4'})
+                .sort({created: -1})
+                .populate({path: 'user', select: {name: 1, source: 1}});
+    Promise.all([q1, q2])
+    .then(r => {
+        return r[0].concat(r[1]);
+    })
+    .then(images => {
+        var ret = [];
+        let cnt = images.length;
+        let skip = pageOptions.pageNumber * pageOptions.pageSize;
+        for(let i = skip; i < cnt && i < skip + pageOptions.pageSize; i++) {
+            let image = images[i];
+            ret.push({
+                userName: image.user.name,
+                userSource: image.user.source,
+                url: image.url,
+                imageId: image.image_id,
+                status: image.status,
+                caption: image.caption || "",
+                created: image.created
+            });
+        }
+        return res.send({
+            success: true,
+            images: ret
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        return res.status(500).send({
+            success: false,
+            message: "Failed to get images, try later"
+        });
+    });
+});
+
+//get user images
+router.get(serverConfig.userImageUrl+"v0", (req, res) => {
+    var userId = req.userId;
+    var pageOptions = {
+        pageNumber: parseInt(req.query.pageNumber) || 0,
+        pageSize: parseInt(req.query.pageSize) || 10
+    }
+    if(!userId) {
+        return res.status(400).send({
+            success: false,
+            message: 'Cannot find the user'
+        });
+    }
+    Image.find({user_id: userId, status: '4'})
+        .sort({created: -1})
         .skip(pageOptions.pageNumber * pageOptions.pageSize)
         .limit(pageOptions.pageSize)
+        .populate({path: 'user', select: {name: 1, source: 1}})
         .exec((err, images) => {
             if(err) {
                 console.log(err);
@@ -210,10 +380,13 @@ router.get(serverConfig.userImageUrl, (req, res) => {
                 var userImages = [];
                 images.forEach(image => {
                     userImages.push({
+                        userName: image.user.name,
+                        userSource: image.user.source,
                         url: image.url,
                         imageId: image.image_id,
-                        status: image.status || "NEW",
-                        caption: image.caption || "This is a mocked caption"
+                        status: image.status,
+                        caption: image.caption || "",
+                        created: image.created
                     });
                 });
         
@@ -223,26 +396,9 @@ router.get(serverConfig.userImageUrl, (req, res) => {
                 });
             }
         });
-
-    // Image.find({user_id: userId}, (err, images) => {
-    //     if(err) {
-    //         console.log(err);
-    //         return res.status(500).send({ success: false, message: 'Image query failed' });
-    //     }
-
-    //     var userImages = [];
-    //     images.forEach(image => {
-    //         userImages.push(image.url);
-    //     });
-
-    //     res.status(200).send({
-    //         success: true,
-    //         urls: userImages
-    //     });
-
-    // });
 });
 
+//get single image detail
 router.get(serverConfig.imageDetails, (req, res) => {
     var imageId = req.params.imageId;
     Image.findOne({image_id: imageId}, (err, image) => {
@@ -256,22 +412,40 @@ router.get(serverConfig.imageDetails, (req, res) => {
                 success: true,
                 image: {
                     url: image.url,
-                    caption: image.caption || "This is a mocked caption"
+                    userId: image.user_id,
+                    caption: image.caption || "",
+                    status: image.status
                 }
             })
         }
     });
 });
 
+//update image status
 router.put(serverConfig.imageUpdate, (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
     var images = req.body.images;
     let promiseArr = [];
-    images.forEach(image => promiseArr.push(updateImage(image)));
+    images.forEach(image => {
+        if(!image.status || !imageStatusArray.includes(image.status)) {
+            return res.status(400).send({
+                success: false,
+                message: "Image status can only be: " + imageStatusArray
+            });
+        }
+        promiseArr.push(updateImage(image))
+    });
 
     Promise.all(promiseArr).then(result => {
         return res.send({
             success: true,
-            message: "Update images complete"
+            message: "Images update complete"
         });
     })
     .catch(err => {
@@ -286,21 +460,33 @@ router.put(serverConfig.imageUpdate, (req, res) => {
 
 function updateImage(image) {
     return new Promise((resolve, reject) => {
-        Image.findOneAndUpdate({"image_id": image.imageId}, {"url": image.status, updated: Date.now()}, { upsert: false })
+        Image.findOneAndUpdate({'image_id': image.imageId}, {'status': image.status, updated: Date.now()}, { upsert: false })
             .then(result => resolve())
             .catch(err => reject(err))
     });
  }
 
-
+//Used by admin to get all the images
 router.get(serverConfig.images, (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
     var pageOptions = {
         pageNumber: parseInt(req.query.pageNumber) || 0,
         pageSize: parseInt(req.query.pageSize) || 10
     }
-    Image.find({})
+
+    var filter = {};
+    Image.find(filter)
         .skip(pageOptions.pageNumber * pageOptions.pageSize)
         .limit(pageOptions.pageSize)
+        .populate({path: 'user', select: {name: 1, source: 1}})
+        .sort({status: 1})
+        .sort({created: -1})
         .exec((err, images) => {
             if(err) {
                 console.log(err);
@@ -310,10 +496,12 @@ router.get(serverConfig.images, (req, res) => {
             var imagesResult = [];
             images.forEach(image => {
                 imagesResult.push({
+                    "userName": image.user.name,
+                    "userSource": image.user.source,
                     "url": image.url,
-                    "uid": image.user_id,
                     "imageId": image.image_id,
-                    "status": image.status || "This is a mocked status"
+                    "status": image.status || "This is a mocked status",
+                    "created": image.created
                 });
             });
     
@@ -325,36 +513,31 @@ router.get(serverConfig.images, (req, res) => {
         });
 });
 
-router.get(serverConfig.userCount, (req, res) => {
-    User.count({}, (err, cnt) => {
-        if(err) {
-            return res.send({
-                success: false,
-                message: "Failed to get user count"
-            });
-        } else {
-            return res.send({
-                success: true,
-                count: cnt
-            });
-        }
-    }) ;
-});
+router.get(serverConfig.usersInfo, (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
 
-router.get(serverConfig.imageCount, (req, res) => {
-    Image.count({}, (err, cnt) => {
-        if(err) {
-            return res.send({
-                success: false,
-                message: "Failed to get image count"
-            });
-        } else {
-            return res.send({
-                success: true,
-                count: cnt
-            });
-        }
-    }) ;
+    var usersQuery = User.count({});
+    var imagesQuery = Image.count({});
+    Promise.all([usersQuery, imagesQuery])
+    .then(r => {
+        return res.send({
+            success: true,
+            userCount: r[0],
+            imageCount: r[1]
+        });
+    })
+    .catch(err => {
+        return res.status(500).send({
+            success: false,
+            message: "Failed to get user info"
+        });
+    });
 });
 
 router.post(serverConfig.instagramPostCommentUrl, (req, res) => {
