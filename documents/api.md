@@ -70,7 +70,7 @@ response:
         "image" : {
                         "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
                         "imageId": "",
-                        "status": "", //new, viewed, captioning, captioned, deleted
+                        "status": "", //1: new, 2: reviewed, 3: captioning, 4: captioned, 5: deleted
                         "caption": ""
                 }
     }
@@ -116,7 +116,7 @@ request:
             "images": [
                         {
                             "imageId": "",
-                            "status": "" //1:new, 2:viewed, 3:captioning, 4:captioned, 5:deleted
+                            "status": "" //1:new, 2:reviewed, 3:captioning, 4:captioned, 5:deleted
                         }
                     ] 
         }

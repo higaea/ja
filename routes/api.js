@@ -284,6 +284,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
         user_id: req.userId,
         url: image.path.split("\\").join("/"),
         status: "1",
+        caption_id: "",
         caption: "",
         created: Date.now(),
         updated: Date.now(),
@@ -513,9 +514,10 @@ router.get(serverConfig.images, (req, res) => {
         });
 });
 
+//get users and images count
 router.get(serverConfig.usersInfo, (req, res) => {
     if(!req.isAdmin) {
-        console.log("Warn: only admin can update image");
+        console.log("Warn: only admin can get system info");
         return res.status(403).send({
             success: false,
             message: "Permission denied"
@@ -683,6 +685,12 @@ function getCaptionResult(imageCaptionId, cb) {
         });
     }, 3000);
 }
+
+var captionTest = require("./captionEndpoint.js");
+router.get("/test", (req, res) => {
+    captionTest.captionRequestTimer();
+    captionTest.captionResultTimer();
+});
 
 function generateToken(payLoad) {
     return tokenType + jwt.sign(payLoad, privateCert, jwtSignOption);
