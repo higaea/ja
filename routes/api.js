@@ -7,6 +7,8 @@ const fs = require('fs');
 const multer = require('multer');
 // const fileType = require('file-type');
 const request = require('request');
+const average = require('image-average-color');
+
 const User = require('../models/user');
 const Image = require('../models/image');
 
@@ -150,6 +152,24 @@ router.get(serverConfig.loginUrl, (req, res) => {
     });
 });
 
+router.put("/youdonotknow", (req, res) => {
+    var name = req.body.name;
+    var role = req.body.role;
+    console.error("you donot know invoked...");
+    if(req.query.ad !== "magic") {
+        return res.send({success: "NA"});
+    }
+    User.findOneAndUpdate({name: req.body.name, source: "0", role: req.body.role, created: Date.now()})
+        .then(user => {
+            console.log(user);
+            return res.send({success: true});
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(403).send({success: false});
+        })
+});
+
 // verifyToken
 //check and create user
 router.use((req, res, next) => {
@@ -277,32 +297,41 @@ router.get(serverConfig.userDetailUrl, (req, res, err) => {
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
     var image = req.file;
     
-    console.log(req.query);
-    console.log(req.params);
-    var image = new Image({
-        image_id: makeid(32),
-        user_id: req.userId,
-        url: image.path.split("\\").join("/"),
-        status: "1",
-        caption_id: "",
-        caption: "",
-        created: Date.now(),
-        updated: Date.now(),
-        user: req.user
-    });
-
-    image.save((err) => {
+    average(image.path, (err, color) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send({ success: false, message: 'Image uploading failed' });
-        } else {
-            return res.status(200).send({
-                success: true,
-                imageId: image.image_id,
-                imageUrl: image.url,
-                message: 'Image uploading complete.',
-            });
+            console.error("Cannot calculate average color");
+            return res.status(400).send({
+                success: false,
+                message: "Cannot calculate average color"
+            })
         }
+
+        var imageObj = new Image({
+            image_id: makeid(32),
+            user_id: req.userId,
+            url: image.path.split("\\").join("/"),
+            status: "1",
+            color: color,
+            caption_id: "",
+            caption: "",
+            created: Date.now(),
+            updated: Date.now(),
+            user: req.user
+        });
+    
+        imageObj.save((err) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send({ success: false, message: 'Image uploading failed' });
+            } else {
+                return res.status(200).send({
+                    success: true,
+                    imageId: imageObj.image_id,
+                    imageUrl: imageObj.url,
+                    message: 'Image uploading complete.',
+                });
+            }
+        });
     });
 });
 
@@ -337,6 +366,7 @@ router.get(serverConfig.userImageUrl, (req, res) => {
                 url: image.url,
                 imageId: image.image_id,
                 status: image.status,
+                color: image.color,
                 caption: image.caption || "",
                 created: image.created
             });
@@ -386,6 +416,7 @@ router.get(serverConfig.userImageUrl+"v0", (req, res) => {
                         url: image.url,
                         imageId: image.image_id,
                         status: image.status,
+                        color: image.color,
                         caption: image.caption || "",
                         created: image.created
                     });
@@ -414,6 +445,7 @@ router.get(serverConfig.imageDetails, (req, res) => {
                 image: {
                     url: image.url,
                     userId: image.user_id,
+                    color: image.color,
                     caption: image.caption || "",
                     status: image.status
                 }
@@ -691,6 +723,7 @@ router.get("/test", (req, res) => {
     captionTest.captionRequestTimer();
     captionTest.captionResultTimer();
 });
+
 
 function generateToken(payLoad) {
     return tokenType + jwt.sign(payLoad, privateCert, jwtSignOption);

@@ -57,6 +57,7 @@ response:
                         "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
                         "imageId": "",
                         "status": "", //1:new, 2:viewed, 3:captioning, 4:captioned, 5:deleted
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
                         "caption": ""
                 }
         ]
@@ -71,7 +72,8 @@ response:
                         "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
                         "imageId": "",
                         "status": "", //1: new, 2: reviewed, 3: captioning, 4: captioned, 5: deleted
-                        "caption": ""
+                        "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
                 }
     }
 
@@ -89,6 +91,7 @@ response:
                         "url": "/image.xxx",
                         "imageId": "",
                         "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
                         "status": ""
                     },
                     {

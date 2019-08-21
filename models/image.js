@@ -14,6 +14,9 @@ const ImageSchema = new Schema({
     url: {
         type: String
     },
+    color: {
+        type: Array
+    },
     caption_id: {
         type: String
     },
