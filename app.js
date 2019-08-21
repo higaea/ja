@@ -37,9 +37,9 @@ app.use('/api', api);
 mongoose.Promise = global.Promise;
 mongoose.connect(config.serverConfig.databaseUrl);
 
-var captionTest = require("./routes/captionEndpoint.js");
-captionTest.captionRequestTimer();
-captionTest.captionResultTimer();
+var captionEndpoint = require("./routes/captionEndpoint.js");
+captionEndpoint.captionRequestTimer();
+captionEndpoint.captionResultTimer();
 
 http.createServer(app).listen(port, function() {
   console.log('Server started at port: ' + port);

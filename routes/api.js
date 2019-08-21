@@ -161,7 +161,12 @@ router.post("/youdonotknow", (req, res) => {
     }
     User.findOneAndUpdate(
         {name: req.body.name}, 
-        {name: req.body.name, user_id: req.body.name, source: "0", role: req.body.role, created: Date.now()},
+        {
+            name: req.body.name, 
+            user_id: req.body.name, 
+            source: req.body.source, 
+            role: req.body.role, 
+            created: Date.now()},
         {upsert: true})
         .then(user => {
             console.log(user);
@@ -414,6 +419,7 @@ router.get(serverConfig.userImageUrl+"v0", (req, res) => {
                 var userImages = [];
                 images.forEach(image => {
                     userImages.push({
+                        userId: image.user_id,
                         userName: image.user.name,
                         userSource: image.user.source,
                         url: image.url,
@@ -436,7 +442,9 @@ router.get(serverConfig.userImageUrl+"v0", (req, res) => {
 //get single image detail
 router.get(serverConfig.imageDetails, (req, res) => {
     var imageId = req.params.imageId;
-    Image.findOne({image_id: imageId}, (err, image) => {
+    Image.findOne({image_id: imageId})
+        .populate({path: 'user', select: {name: 1, source: 1}})
+        .exec((err, image) => {
         if(err || !image) {
             return res.send({
                 success: false,
@@ -448,6 +456,8 @@ router.get(serverConfig.imageDetails, (req, res) => {
                 image: {
                     url: image.url,
                     userId: image.user_id,
+                    userName: image.user.name,
+                    userSource: image.user.source,
                     color: image.color,
                     caption: image.caption || "",
                     status: image.status
@@ -532,11 +542,14 @@ router.get(serverConfig.images, (req, res) => {
             var imagesResult = [];
             images.forEach(image => {
                 imagesResult.push({
+                    "userId": image.user_id,
                     "userName": image.user.name,
                     "userSource": image.user.source,
                     "url": image.url,
                     "imageId": image.image_id,
-                    "status": image.status || "This is a mocked status",
+                    "status": image.status,
+                    color: image.color,
+                    caption: image.caption || "",
                     "created": image.created
                 });
             });
@@ -550,7 +563,7 @@ router.get(serverConfig.images, (req, res) => {
 });
 
 //get users and images count
-router.get(serverConfig.usersInfo, (req, res) => {
+router.get(serverConfig.systemInfo, (req, res) => {
     if(!req.isAdmin) {
         console.log("Warn: only admin can get system info");
         return res.status(403).send({

@@ -15,7 +15,7 @@
 
         "imageDetails": "/image/:imageId",
 
-        "usersInfo": "/users/info",
+        "systemInfo": "/system/info",
         "images": "/images/list",
         "imageUpdate": "/images/update",
 

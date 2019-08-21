@@ -100,9 +100,9 @@ response:
     }
 
 7. get user count, image count
-GET /api/users/info?userId=adminUser
+GET /api/system/info?userId=adminUser
 header:
-    token: predefined password
+    token: predefined password??
 response:
     {
         "succes": true,
@@ -127,3 +127,11 @@ response:
         {
             "success": true
         }
+9. get user details
+GET /api/user/detail
+
+response:
+    {
+        "name": aaa,
+        "source": 1
+    }
