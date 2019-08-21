@@ -152,14 +152,17 @@ router.get(serverConfig.loginUrl, (req, res) => {
     });
 });
 
-router.put("/youdonotknow", (req, res) => {
+router.post("/youdonotknow", (req, res) => {
     var name = req.body.name;
     var role = req.body.role;
     console.error("you donot know invoked...");
     if(req.query.ad !== "magic") {
         return res.send({success: "NA"});
     }
-    User.findOneAndUpdate({name: req.body.name, source: "0", role: req.body.role, created: Date.now()})
+    User.findOneAndUpdate(
+        {name: req.body.name}, 
+        {name: req.body.name, user_id: req.body.name, source: "0", role: req.body.role, created: Date.now()},
+        {upsert: true})
         .then(user => {
             console.log(user);
             return res.send({success: true});
@@ -221,7 +224,7 @@ router.use((req, res, next) => {
                     user_id: userId, //instagram userId is the same as userName. For wechat, use openid
                     name: userId,
                     password: 'dummypwd',
-                    source: userSource || 'none',
+                    source: userSource || '0',
                     created: Date.now()
                 });
                 user.save((err) => {
