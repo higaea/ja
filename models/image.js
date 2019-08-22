@@ -35,6 +35,9 @@ const ImageSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    interActiveStatus: {
+        type: String, default: "0" //0:Need, 1: No Need
     }
 });
 
