@@ -29,6 +29,12 @@ app.use(morgan('combined', { stream: winston.stream }));
 
 let port = process.env.PORT || 8080;
 
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
+
 app.use("/", express.static(path.join(__dirname, "/public")));
 app.use("/public/images", express.static(path.join(__dirname, "/public/images")));
 

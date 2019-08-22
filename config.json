@@ -6,18 +6,18 @@
         "logoutUrl": "/user/logout",
 
         "userDetailUrl": "/user/detail",
-        
         "imageUrl": "/user/image",
         "userImageUrl": "/user/images/list",
+
         "captionUrl": "/caption/:imageId",
         "instagramGetMediaUrl": "/instagram/media",
         "instagramPostCommentUrl": "/instagram/comment",
 
         "imageDetails": "/image/:imageId",
-
         "systemInfo": "/system/info",
         "images": "/images/list",
         "imageUpdate": "/images/update",
+        "randomImages": "/images/display",
 
         "databaseUrl": "mongodb://localhost:27017/ja"
         

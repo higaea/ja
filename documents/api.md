@@ -64,7 +64,7 @@ response:
     }
 
 5. get image details
-GET /api/image/imageId?userId=openId
+GET /api/image/imageId?userId=openId&source=1
 response:
     {
         "success": true,
@@ -78,7 +78,7 @@ response:
     }
 
 6. get all images, this endpoint should be called only by admin
-GET /images/list?userId=adminUser&pageNumber=0&pageSize=20
+GET /images/list?userId=adminUser&source=1&pageNumber=0&pageSize=20
 header:
     token: predefined password //do we need this?
 response:
@@ -100,7 +100,7 @@ response:
     }
 
 7. get user count, image count
-GET /api/system/info?userId=adminUser
+GET /api/system/info?userId=adminUser&source=1
 header:
     token: predefined password??
 response:
@@ -111,7 +111,7 @@ response:
     }
 
 8. update image // used to review image and delete image
-PUT /api/images/update?userId=adminUser
+PUT /api/images/update?userId=adminUser&source=1
 header:
     token: predefined password ??
 request:
@@ -128,10 +128,29 @@ response:
             "success": true
         }
 9. get user details
-GET /api/user/detail
+GET /api/user/detail?userId=u1&source=1
 
 response:
     {
         "name": aaa,
         "source": 1
+    }
+
+10. get all captioned images
+GET /api/images/display?pageSize=10&pageNumber=0
+response:
+    {
+        "success": true
+        "images": [
+                    {
+                        "url": "/image.xxx",
+                        "imageId": "",
+                        "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
+                        "status": ""
+                        "created": created time
+                    },
+                    {
+                    }
+                ]   
     }

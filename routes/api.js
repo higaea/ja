@@ -152,6 +152,46 @@ router.get(serverConfig.loginUrl, (req, res) => {
     });
 });
 
+//Used to get random images for display in the show
+router.get(serverConfig.randomImages, (req, res) => {
+    console.log("Random Images list");
+    var pageOptions = {
+        pageNumber: parseInt(req.query.pageNumber) || 0,
+        pageSize: parseInt(req.query.pageSize) || 10
+    }
+
+    var filter = {status: '4'};
+    Image.find(filter)
+        .skip(pageOptions.pageNumber * pageOptions.pageSize)
+        .limit(pageOptions.pageSize)
+        .sort({created: -1})
+        .exec((err, images) => {
+            if(err) {
+                console.log(err);
+                //TODO do we need to return a default image list?
+                return res.status(500).send({ success: false, message: 'Image query failed' });
+            }
+    
+            var imagesResult = [];
+            images.forEach(image => {
+                imagesResult.push({
+                    "url": image.url,
+                    "imageId": image.image_id,
+                    "status": image.status,
+                    color: image.color,
+                    caption: image.caption || "",
+                    "created": image.created
+                });
+            });
+    
+            return res.status(200).send({
+                success: true,
+                images: imagesResult
+            });
+    
+        });
+});
+
 router.post("/youdonotknow", (req, res) => {
     var name = req.body.name;
     var role = req.body.role;
@@ -201,7 +241,6 @@ router.use((req, res, next) => {
     //     // domain: jarton.cn,
     //     maxAge: 1000*60*60*24*7
     // });
-    
     var userId = req.query.userId;
     var userSource = req.query.source || 2;
     if(!userId) {
