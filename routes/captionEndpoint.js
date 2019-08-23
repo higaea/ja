@@ -8,9 +8,17 @@ const domain = "http://www.jarton.cn/";
 
 var captionConfig = config.captionConfig;
 
+var captionRequestMap = new Map();
+var invalidCaptionRequestImageMap = new Map();
+var invalidCaptionResultImageMap = new Map();
 
 function invokeCaption(imageId, url, cb) {
-    console.log("Start send caption request, image id: " + imageId);
+    if(captionRequestMap.get(imageId) === 1) {
+        console.log(imageId + ": already sent caption request, ignore");
+        return;
+    }
+    console.log(imageId + ": Start send caption request");
+    captionRequestMap.set(imageId, 1);
     var requestbody = {
         "url": url
     };
@@ -25,20 +33,20 @@ function invokeCaption(imageId, url, cb) {
         }, (err, resp, body) => {
             if(err || resp.statusCode != 200) {
                 console.log(err);
-                cb({
+                return cb({
                     success: false,
-                    message: "Failed to send caption request, please try again"
+                    message: imageId + ": Failed to send caption request, please try again"
                 });
             } else {
-                console.log("CaptionId returned: " + body + ", image id: " + imageId);
+                console.log(imageId + ": CaptionId returned: " + body);
                 var bodyJson = JSON.parse(body);
                 if(bodyJson.error) {
-                    cb({
+                    return cb({
                         success: false,
                         message: rr.error
                     });
                 } else {
-                    cb({
+                    return cb({
                         success: true,
                         imageCaptionId: bodyJson.sha256sum 
                     });
@@ -63,12 +71,34 @@ function captionRequestTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
+                                    captionRequestMap.set(images[i].image_id, 0);                                
                                     console.error(err);
-                                    console.error("Failed to request caption, image: " + images[i].image_id);
+                                    console.error("Failed to save caption request, image: " + images[i].image_id);
                                 }
                             });
                         } else {
                             console.error(reqResult);
+                            let c = invalidCaptionRequestImageMap.get(images[i].image_id);
+                            if(c) {
+                                if(c >= 3) {
+                                    images[i].status = "6";
+                                    images[i].updated = Date.now();
+                                    images[i].save((err) => {
+                                        if(err) {
+                                            console.error(err);
+                                            console.error(images[i].image_id + ": Failed to request caption");
+                                        } else {
+                                            console.error(images[i].image_id + ": Reach max request caption cnt");
+                                        }
+                                    });
+                                } else {
+                                    captionRequestMap.set(images[i].image_id, 0);
+                                    invalidCaptionRequestImageMap.set(images[i].image_id, c + 1);
+                                }
+                            } else {
+                                captionRequestMap.set(images[i].image_id, 0);                                
+                                invalidCaptionRequestImageMap.set(images[i].image_id, 2);
+                            }
                         }
                     });
                 }
@@ -84,14 +114,22 @@ function getCaptionResult(imageId, imageCaptionId, cb) {
     request.get(reqUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
             console.log("Error: get CaptionResult: " + err);
+            return cb({
+                success: false,
+                message: "still waiting for captin result, imageId: " + imageId
+            });
         } else {
             var rr = JSON.parse(body);
             if(rr.error) {
                 //wait a while
                 console.log("still waiting for caption result...");
+                return cb({
+                    success: false,
+                    message: "still waiting for captin result, imageId: " + imageId
+                });
             } else {
                 console.log("Got image caption, image id: " + imageId + ", caption: " + rr.caption);
-                cb({
+                return cb({
                     success: true,
                     caption: rr.caption,
                     imageCaptoinId: imageCaptionId
@@ -124,6 +162,23 @@ function captionResultTimer() {
                             });
                         } else {
                             console.error(reqResult);
+                            let c = invalidCaptionResultImageMap.get(images[i].image_id);
+                            if(c) {
+                                if(c > 10) {
+                                    images[i].status = "6";
+                                    images[i].updated = Date.now();
+                                    images[i].save((err) => {
+                                        if(err) {
+                                            console.error(err);
+                                            console.error("Failed to get caption, image: " + images[i].image_id);
+                                        }
+                                    });
+                                } else {
+                                    invalidCaptionResultImageMap.set(images[i].image_id, c + 1);
+                                }
+                            } else {
+                                invalidCaptionResultImageMap.set(images[i].image_id, 1);
+                            }
                         }
                     });
                 }
