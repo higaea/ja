@@ -25,7 +25,7 @@
     "imageConfig": {
         "type": ["jpg", "png", "jpeg"],
         "min_size": 51200,
-        "max_size": 15242880
+        "max_size": 5242880
     },
     "instagramConfig": {
         "accessToken": "EAAg3U9spCgEBAMdxvu9YZAkGKJJG67e0AdLd1pXyiHgrDLC0kGZAC3clyKU0I3UMwu0AbtOKtC76sO9q8E2NCUCjuLRBHKU5pHp9aDSKBSHRsBBfCLfGKzhL2D1hyW8nZBWwl9ZBi6qTZBOvZApL1uuz6fTm93pPy3FZBeW7ePLIgZDZD",

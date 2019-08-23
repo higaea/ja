@@ -81,3 +81,13 @@
 6. image upload
 7. use openid/instagram username to get user details including source.
 
+
+
+1. node cluster
+2. caption docker cluster
+3. random get 10 images
+4. image size configure
+5. tide up logs, caption endpoint logs
+6. when upload an image, memory is used nearly double and cpu is used to 100%?
+7. mongo column index
+8. 

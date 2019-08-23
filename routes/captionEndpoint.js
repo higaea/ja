@@ -32,7 +32,9 @@ function invokeCaption(imageId, url, cb) {
             body: JSON.stringify(requestbody)
         }, (err, resp, body) => {
             if(err || resp.statusCode != 200) {
-                console.log(err);
+                if(err) {
+                    console.log(err);
+                }
                 return cb({
                     success: false,
                     message: imageId + ": Failed to send caption request, please try again"
@@ -58,8 +60,10 @@ function invokeCaption(imageId, url, cb) {
 function captionRequestTimer() {
     setInterval(() => {
         console.log("loading reviewed images..");
-        Image.find({"status": "2"})
-            .exec((err, images) => {
+        Image.find({
+            "status": "2",
+            "caption_id ": {$ne: null}
+        }).exec((err, images) => {
                 if(err) {
                     console.error("captionRequestTimer: Failed to look for reviewed images");
                 }
@@ -71,10 +75,11 @@ function captionRequestTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    captionRequestMap.set(images[i].image_id, 0);                                
                                     console.error(err);
                                     console.error("Failed to save caption request, image: " + images[i].image_id);
                                 }
+                                captionRequestMap.delete(images[i].image_id);
+                                invalidCaptionRequestImageMap.delete(images[i].image_id);
                             });
                         } else {
                             console.error(reqResult);
@@ -90,6 +95,8 @@ function captionRequestTimer() {
                                         } else {
                                             console.error(images[i].image_id + ": Reach max request caption cnt");
                                         }
+                                        captionRequestMap.delete(images[i].image_id);
+                                        invalidCaptionRequestImageMap.delete(images[i].image_id);
                                     });
                                 } else {
                                     captionRequestMap.set(images[i].image_id, 0);
@@ -159,12 +166,13 @@ function captionResultTimer() {
                                     console.error(err);
                                     console.error("Failed to save caption, image: " + images[i].image_id);
                                 }
+                                invalidCaptionResultImageMap.delete(images[i].image_id);                                
                             });
                         } else {
                             console.error(reqResult);
                             let c = invalidCaptionResultImageMap.get(images[i].image_id);
                             if(c) {
-                                if(c > 10) {
+                                if(c > 20) {
                                     images[i].status = "6";
                                     images[i].updated = Date.now();
                                     images[i].save((err) => {
@@ -173,6 +181,7 @@ function captionResultTimer() {
                                             console.error("Failed to get caption, image: " + images[i].image_id);
                                         }
                                     });
+                                    invalidCaptionResultImageMap.delete(images[i].image_id);
                                 } else {
                                     invalidCaptionResultImageMap.set(images[i].image_id, c + 1);
                                 }
