@@ -252,7 +252,7 @@ router.use((req, res, next) => {
     if(!sourceArray.includes(userSource)) {
         return res.status(400).send({
             success: false,
-            message: 'Source could only be 0, 1 ,2'
+            message: 'User source is invalid'
         });
     }
     User.findOne({user_id: userId}, (err, user) => {
@@ -346,10 +346,10 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
     
     average(image.path, (err, color) => {
         if (err) {
-            console.error("Cannot calculate average color");
+            console.error(image.path + ", Cannot calculate average color: " + err);
             return res.status(400).send({
                 success: false,
-                message: "Cannot calculate average color"
+                message: "Image uploading failed, try another image again."
             })
         }
 
@@ -369,7 +369,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
         imageObj.save((err) => {
             if (err) {
                 console.log(err);
-                return res.status(500).send({ success: false, message: 'Image uploading failed' });
+                return res.status(500).send({ success: false, message: 'Image uploading failed, try again.' });
             } else {
                 return res.status(200).send({
                     success: true,
@@ -487,7 +487,7 @@ router.get(serverConfig.imageDetails, (req, res) => {
         if(err || !image) {
             return res.send({
                 success: false,
-                message: "Failed to get image detail"
+                message: "Failed to get image details"
             });
         } else {
             return res.send({
