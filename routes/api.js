@@ -529,10 +529,17 @@ router.put(serverConfig.imageUpdate, (req, res) => {
     });
 
     Promise.all(promiseArr).then(result => {
-        return res.send({
-            success: true,
-            message: "Images update complete"
-        });
+        if(result[0]) {
+            return res.send({
+                success: true,
+                message: "Images review complete"
+            });
+        } else {
+            return res.send({
+                success: false,
+                message: "Review failed. No such image"
+            });
+        }
     })
     .catch(err => {
         return res.status(500).send({
@@ -547,7 +554,7 @@ router.put(serverConfig.imageUpdate, (req, res) => {
 function updateImage(image) {
     return new Promise((resolve, reject) => {
         Image.findOneAndUpdate({'image_id': image.imageId}, {'status': image.status, updated: Date.now()}, { upsert: false })
-            .then(result => resolve())
+            .then(result => resolve(result))
             .catch(err => reject(err))
     });
  }
@@ -859,7 +866,7 @@ function validate_format(req, res, next) {
     if(image.size < imageConfig.min_size || image.size > imageConfig.max_size) {
         return res.send({
             success: false,
-            message: 'Image size should be [50k, 10m]'
+            message: 'Image size should be between [50K, 4M]'
         });
     }
     next();
