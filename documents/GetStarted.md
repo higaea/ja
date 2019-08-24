@@ -1,7 +1,7 @@
 ### useful api
 1. get user's pages
 curl -i -X GET \
- "https://graph.facebook.com/v3.2/me/accounts?access_token=EAAg3U9spCgEBAKuFlT2N2hV8KrwpPh66MM7zUwjLMBt6V62bXLti14X7wqJZBizZAHXUHfv9vA5lKbC7LLQDu2F79ICscNhirR11D19R8kTmoJYDQ9hVsvXb3IRPA1LxKDZB3zrtQcAcZCbFzo8AqY1FVc6Cu28O8wdBtbqzhlRhBwsZBRUmMndUJVnI06tgEaOicM62TiAZDZD"
+ "https://graph.facebook.com/v3.2/me/accounts?access_token=EAAg3U9spCgEBABYZCZB5Si5CG6oGJfT6rRgnoufJs0IpksaWyktx8EY4Ak0wraLwEYGugfeW278jVgJJq6Tac5SSaO66maZBtUkkN5J5V62AZAxpGCiJmNmd3OUDwK0YRlO3Y1lcYgXjlD02by3TEZCPZBNtkzOs12u6yjPeZAwk9Cgy5BT4npy0vxerg6klX6fHaODZBeEThgZDZD"
 
  2. get page's IG business account
  curl -i -X GET \

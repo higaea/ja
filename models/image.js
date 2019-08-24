@@ -24,7 +24,7 @@ const ImageSchema = new Schema({
         type: String
     },
     status: {
-        type: String //1:NEW, 2:VIEWED, 3:CAPTIONING, 4:CAPTIONED, 5:DELETED 
+        type: String //1:NEW, 2:VIEWED, 3:CAPTIONING, 4:CAPTIONED, 5:DELETED, 6:INVALID 
     },
     created: {
         type: Date, default: Date.now

@@ -137,7 +137,7 @@ response:
     }
 
 10. get all captioned images
-GET /api/images/display?pageSize=10&pageNumber=0
+GET /api/images/display
 response:
     {
         "success": true

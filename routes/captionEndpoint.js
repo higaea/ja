@@ -62,7 +62,7 @@ function captionRequestTimer() {
         console.log("loading reviewed images..");
         Image.find({
             "status": "2",
-            "caption_id ": {$ne: null}
+            "caption_id": ""
         }).exec((err, images) => {
                 if(err) {
                     console.error("captionRequestTimer: Failed to look for reviewed images");
@@ -160,6 +160,7 @@ function captionResultTimer() {
                         if(reqResult.success) {
                             images[i].caption = reqResult.caption;
                             images[i].status = "4";
+                            images[i].interActiveStatus = "0";
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
