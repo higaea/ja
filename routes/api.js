@@ -200,7 +200,8 @@ router.post("/youdonotknow", (req, res) => {
             user_id: req.body.name, 
             source: req.body.source, 
             role: req.body.role, 
-            created: Date.now()},
+            created: Date.now()
+        },
         {upsert: true})
         .then(user => {
             console.log(user);
@@ -262,7 +263,7 @@ router.use((req, res, next) => {
                     user_id: userId, //instagram userId is the same as userName. For wechat, use openid
                     name: userId,
                     password: 'dummypwd',
-                    source: userSource || '0',
+                    source: userSource || '2',
                     created: Date.now()
                 });
                 user.save((err) => {
@@ -276,6 +277,7 @@ router.use((req, res, next) => {
                         req.userName = user.name;
                         req.userId = user.user_id;
                         req.user = user._id;
+                        req.source = user.source;
                         req.isAdmin = (user.role == 1);
                         
                         next();
@@ -291,6 +293,7 @@ router.use((req, res, next) => {
                     req.userName = user.name;
                     req.userId = user.user_id;
                     req.user = user._id;
+                    req.source = user.source;
                     req.isAdmin = (user.role == 1);
                     
                     next();
@@ -346,7 +349,10 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
                 message: "Image uploading failed, try another image again."
             })
         }
-
+        var interActiveStatus = 1;
+        if(req.source == 2) {
+            interActiveStatus = 0;
+        }
         var imageObj = new Image({
             image_id: makeid(32),
             user_id: req.userId,
@@ -355,6 +361,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
             color: color,
             caption_id: "",
             caption: "",
+            interActiveStatus: interActiveStatus,
             created: Date.now(),
             updated: Date.now(),
             user: req.user
@@ -768,12 +775,28 @@ function getCaptionResult(imageCaptionId, cb) {
     }, 3000);
 }
 
-var captionTest = require("./captionEndpoint.js");
-router.get("/test", (req, res) => {
-    captionTest.captionRequestTimer();
-    captionTest.captionResultTimer();
-});
+var targetMediaContent = "jarton";
+var instagramEndpoint = require("./instagramEndpoint");
 
+router.put("/target_image", (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update instagram target image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
+    if(!req.query.content) {
+        return res.status(400).send({
+            success: false,
+            message: "Parameter content required"
+        });
+    }
+
+    instagramEndpoint.updateTargetMedia(req.query.content, ret => {
+        return res.send(ret)
+    });
+});
 
 function generateToken(payLoad) {
     return tokenType + jwt.sign(payLoad, privateCert, jwtSignOption);

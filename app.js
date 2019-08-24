@@ -50,7 +50,6 @@ captionEndpoint.captionResultTimer();
 
 var instagramEndpoint = require("./routes/instagramEndpoint.js");
 instagramEndpoint.commentTimer();
-instagramEndpoint.targetMediaTimer();
 
 const appid = 'wx153892d5b43e7bd1';
 const appsecret = '565e8888db8a104d718ee45ab4233dc0';

@@ -7,6 +7,9 @@ const Image = require('../models/image');
 
 const config = require('../config.json');
 
+const util = require('util');
+const getPromise = util.promisify(request.get);
+
 const instagramAPI = "https://graph.facebook.com/v4.0/";
 
 var access_token="EAAg3U9spCgEBANe9JS9b0uMaRILzf1jReHhJgNgo5ot8xbvWLfoKSA083vs2wDVgsl379Yt2xgIVaMEjK6XMyEELjY8QXeuxZBaeloNdZCgDI6ZCBnBqUdPZACbMLr7FYRlbMUgjTFG0SCNXYyFqwijcsn1BYa93UEyh8gEpjAZDZD";
@@ -19,10 +22,13 @@ var getMediaListUrl = instagramAPI + jartonBizAccount + "/media?" + "access_toke
 var getMediaDetailsUrl = instagramAPI + "MEDIAID?" + "access_token=" + access_token 
             + "&fields=caption,timestamp";
 
+var targetMediaContent = "jarton";
+
+
 var postRequestMap = new Map();
 
 function instagramPostComment(userId, imageId, caption, cb) {
-    console.log();
+    console.log(imageId + ": Start post Instagram comment.");
     if(postRequestMap.get(imageId) === 1) {
         console.log(imageId + ": already send post comment request");
         return;
@@ -83,6 +89,7 @@ function commentTimer() {
                                     console.error(images[i].image_id + ": Failed to update image interActiveStatus");
                                     return;
                                 }
+                                console.log(images[i].image_id + ": Instagram comment post complete.")
                                 postRequestMap.delete(images[i].image_id);
                             });
                         } else {
@@ -97,12 +104,6 @@ function commentTimer() {
     
 }
 
-const util = require('util');
-const getPromise = util.promisify(request.get);
-var targetMediaContent = "jarton";
-
-
-
 function getMediaDetails(imageId) {
     return new Promise((resolve, reject) => {
         let url = getMediaDetailsUrl.replace("MEDIAID", imageId);
@@ -115,7 +116,7 @@ function getMediaDetails(imageId) {
     });
  }
 
-function updateTargetMediaTimer() {
+function updateTargetMedia(targetMediaContent, cb) {
     console.log("Update target media...");
     request.get(getMediaListUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
@@ -135,7 +136,7 @@ function updateTargetMediaTimer() {
             Promise.all(promiseArr).then(detailedImages => {
                 var targetMedia;
                 for(let j = 0; j < detailedImages.length; j++) {
-                    let imageDetail = detailedImages[j];
+                    let imageDetail = JSON.parse(detailedImages[j]);
                     console.log("updateTargetMediaTimer: " + imageDetail);
                     if(!targetMedia) {
                         targetMedia = imageDetail;
@@ -150,11 +151,22 @@ function updateTargetMediaTimer() {
                     }
                 }
                     
-                console.log("Target Media Found: " + targetMedia);
+                console.log("Target Media Found: " + targetMedia.id);
                 mediaObjectId = targetMedia.id;
+                postUrl = instagramAPI + mediaObjectId + "/comments?" 
+                       + "access_token=" + access_token + "&message=";
+
+                return cb({
+                    success: true,
+                    message: "Update target media complete. Target media is posted at: " + targetMedia.timestamp
+                });
             })
             .catch(err => {
                 console.error({
+                    success: false,
+                    message: "Failed to get target media object"
+                });
+                return cb({
                     success: false,
                     message: "Failed to get target media object"
                 });
@@ -166,5 +178,5 @@ function updateTargetMediaTimer() {
 
 module.exports = {
     commentTimer: commentTimer,
-    targetMediaTimer: updateTargetMediaTimer
+    updateTargetMedia: updateTargetMedia
 };
