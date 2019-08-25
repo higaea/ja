@@ -536,7 +536,7 @@ router.get(serverConfig.userImageUrl+"v0", (req, res) => {
 
 //get single image detail
 router.get(serverConfig.imageDetails, (req, res) => {
-    var imageId = req.params.imageId;
+    var imageId = req.query.imageId;
     Image.findOne({image_id: imageId})
         .populate({path: 'user', select: {name: 1, source: 1}})
         .exec((err, image) => {
@@ -854,6 +854,28 @@ router.put("/target_image", (req, res) => {
 
     instagramEndpoint.updateTargetMedia(req.query.content, ret => {
         return res.send(ret)
+    });
+});
+
+router.put("/change_instagram_comment", (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update instagram target image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
+    if(!req.query.toggle) {
+        return res.status(400).send({
+            success: false,
+            message: "Parameter toggle required"
+        });
+    }
+
+    instagramEndpoint.instagramCommentToggle(req.query.toggle);
+    return res.send({
+        success: true,
+        instagramCommentToggle: req.query.toggle
     });
 });
 

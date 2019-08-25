@@ -64,7 +64,7 @@ response:
     }
 
 5. get image details
-GET /api/image/imageId?userId=openId&source=1
+GET /api/image/detail?imageId=XJ0lXOu5dI3MzFjjidQszdGUfljn1CJl&userId=u2&source=2
 response:
     {
         "success": true,

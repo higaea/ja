@@ -13,7 +13,7 @@
         "instagramGetMediaUrl": "/instagram/media",
         "instagramPostCommentUrl": "/instagram/comment",
 
-        "imageDetails": "/image/:imageId",
+        "imageDetails": "/image/detail",
         "systemInfo": "/system/info",
         "images": "/images/list",
         "imageUpdate": "/images/update",

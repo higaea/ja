@@ -22,8 +22,7 @@ var getMediaListUrl = instagramAPI + jartonBizAccount + "/media?" + "access_toke
 var getMediaDetailsUrl = instagramAPI + "MEDIAID?" + "access_token=" + access_token 
             + "&fields=caption,timestamp";
 
-var targetMediaContent = "jarton";
-
+var instagramCommentToggle = 1;
 
 var postRequestMap = new Map();
 
@@ -79,6 +78,9 @@ function instagramPostComment(userId, imageId, caption, cb) {
 
 function commentTimer() {
     setInterval(() => {
+        if(instagramCommentToggle != 1) {
+            return;
+        }
         console.log("loading instagram images for comments..");
         var filter = {
             "status": "4", 
@@ -196,7 +198,12 @@ function updateTargetMedia(targetMediaContent, cb) {
 }
 
 
+function setToggle(toggle) {
+    instagramCommentToggle = toggle;
+}
+
 module.exports = {
     commentTimer: commentTimer,
-    updateTargetMedia: updateTargetMedia
+    updateTargetMedia: updateTargetMedia,
+    instagramCommentToggle: setToggle
 };
