@@ -53,6 +53,8 @@ function instagramPostComment(userId, imageId, caption, cb) {
                 try{
                     bodyJson = JSON.parse(body);
                 } catch(e) {
+                    console.error(imageId + ": JSON.parse: " + body);
+
                     return cb({
                         success: false,
                         message: imageId + ": Failed to post comment, error: " + e
@@ -77,13 +79,13 @@ function instagramPostComment(userId, imageId, caption, cb) {
 
 function commentTimer() {
     setInterval(() => {
-        console.log("Loading instagram images for comments..");
+        console.log("loading instagram images for comments..");
         var filter = {
             "status": "4", 
             "caption": {$ne: ""}, 
             "interActiveStatus": "0"
         }
-        Image.find(filter).limit(5).exec((err, images) => {
+        Image.find(filter).limit(2).exec((err, images) => {
             if(err) {
                 console.error("Error: images query issue");
                 return;
@@ -95,7 +97,7 @@ function commentTimer() {
                             
                         } else {
                             images[i].interActiveStatus = 2;
-                            console.error(postResult);
+                            console.error(images[i].image_id + ": " + postResult);
                         }
                         images[i].updated = Date.now();
                         images[i].save((err) => {
@@ -109,7 +111,7 @@ function commentTimer() {
                 }
             }
         });
-    }, 6000)
+    }, 15000)
     
 }
 
