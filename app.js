@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // app.use(morgan('dev'));
 app.use(morgan('combined', { stream: winston.stream }));
 
-let port = process.env.PORT || 8080;
+let port = process.env.PORT || 80;
 
 app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

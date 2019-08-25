@@ -241,15 +241,20 @@ router.post("/youdonotknow", (req, res) => {
         return res.send({success: "NA"});
     }
     User.findOneAndUpdate(
-        {name: req.body.name}, 
-        {
-            name: req.body.name, 
-            user_id: req.body.name, 
-            source: req.body.source, 
-            role: req.body.role, 
-            created: Date.now()
-        },
-        {upsert: true})
+            {
+                name: req.body.name
+            }, 
+            {
+                name: req.body.name, 
+                user_id: req.body.name, 
+                source: req.body.source, 
+                role: req.body.role, 
+                created: Date.now()
+            },
+            {
+                upsert: true
+            }
+        )
         .then(user => {
             console.log(user);
             return res.send({success: true});
@@ -284,7 +289,7 @@ router.use((req, res, next) => {
     //     maxAge: 1000*60*60*24*7
     // });
     var userId = req.query.userId;
-    var userSource = req.query.source || 2;
+    var userSource = req.query.source || '2';
     if(!userId) {
         return res.status(400).send({
             success: false,
@@ -331,7 +336,8 @@ router.use((req, res, next) => {
                     }
                 });
             } else {
-                if(user.source != userSource) {
+                //FIXME for now, there is no wechat authentication, admin user will not need providing source
+                if(user.role != 1 && user.source != userSource) {
                     return res.send({
                         success: false,
                         message: "User Id already exists"
