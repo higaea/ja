@@ -36,7 +36,7 @@ app.all('*', function(req, res, next) {
 });
 
 
-// app.use("/", express.static(path.join(__dirname, "/public")));
+app.use("/private", express.static(path.join(__dirname, "/private")));
 app.use("/public/images", express.static(path.join(__dirname, "/public/images")));
 
 app.use('/api', api);
