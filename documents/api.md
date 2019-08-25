@@ -71,6 +71,7 @@ response:
         "image" : {
                         "url": "public/uploads/lEA72K6X0gRunviT-1565522724373.JPG",
                         "imageId": "",
+                        "userId": "",
                         "status": "", //1: new, 2: reviewed, 3: captioning, 4: captioned, 5: deleted
                         "caption": "",
                         "color": [129, 88, 88, 255], //red, green, blue, alpha
@@ -86,8 +87,9 @@ response:
         "success": true
         "images": [
                     {
-                        "userSource": "" //0: none, 1: wechat, 2: instagram
-                        "userName": "" // need this?
+                        "userSource": "", //0: none, 1: wechat, 2: instagram
+                        "userName": "", // need this?
+                        "userId": "",
                         "url": "/image.xxx",
                         "imageId": "",
                         "caption": "",
@@ -136,7 +138,7 @@ response:
         "source": 1
     }
 
-10. get all captioned images
+10. get all captioned images for random display, return 10 random images
 GET /api/images/display
 response:
     {
@@ -145,6 +147,7 @@ response:
                     {
                         "url": "/image.xxx",
                         "imageId": "",
+                        "userId": "",
                         "caption": "",
                         "color": [129, 88, 88, 255], //red, green, blue, alpha
                         "status": ""
@@ -154,3 +157,23 @@ response:
                     }
                 ]   
     }
+11. get all captioned images for unlogined users
+GET /images/captioned/list
+response:
+    {
+        "success": true
+        "images": [
+                    {
+                        "url": "/image.xxx",
+                        "imageId": "",
+                        "userId": "",
+                        "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
+                        "status": ""
+                        "created": created time
+                    },
+                    {
+                    }
+                ]   
+    }
+

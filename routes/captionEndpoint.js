@@ -41,7 +41,17 @@ function invokeCaption(imageId, url, cb) {
                 });
             } else {
                 console.log(imageId + ": CaptionId returned: " + body);
-                var bodyJson = JSON.parse(body);
+                var bodyJson;
+                try{
+                    bodyJson = JSON.parse(body);
+                } catch(e) {
+                    console.error(imageId + ": Parse caption request body exception: " + e);
+                    return cb({
+                        success: false,
+                        message: imageId + ": Parse caption request body exception: " + e
+                    });
+                }
+
                 if(bodyJson.error) {
                     return cb({
                         success: false,
@@ -120,28 +130,41 @@ function getCaptionResult(imageId, imageCaptionId, cb) {
     var reqUrl = captionConfig.captionResultUrl.replace(":image_caption_id", imageCaptionId);
     request.get(reqUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
-            console.log("Error: get CaptionResult: " + err);
+            if(err) {
+                console.error(imageId + ": Error: get CaptionResult: " + err);
+            }
             return cb({
                 success: false,
-                message: "still waiting for captin result, imageId: " + imageId
+                message: imageId + ": still waiting for captin result"
             });
         } else {
-            var rr = JSON.parse(body);
-            if(rr.error) {
-                //wait a while
-                console.log("still waiting for caption result...");
+            var rr;
+            try{
+                rr = JSON.parse(body);
+            } catch (e) {
+                console.error("Parse Caption Result Exception: " + e);
                 return cb({
                     success: false,
-                    message: "still waiting for captin result, imageId: " + imageId
+                    message: imageId + ": still waiting for captin result"
+                });
+            }
+
+            if(rr.error) {
+                //wait a while
+                console.log(imageId + ": still waiting for caption result...");
+                return cb({
+                    success: false,
+                    message: imageId + ": still waiting for captin result"
                 });
             } else {
-                console.log("Got image caption, image id: " + imageId + ", caption: " + rr.caption);
+                console.log(imageId + ": Got image caption, caption: " + rr.caption);
                 return cb({
                     success: true,
                     caption: rr.caption,
                     imageCaptoinId: imageCaptionId
                 });
             }
+            
         }
     });
 }

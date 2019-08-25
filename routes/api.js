@@ -11,8 +11,9 @@ const average = require('image-average-color');
 
 const User = require('../models/user');
 const Image = require('../models/image');
-
 const config = require('../config.json');
+
+var instagramEndpoint = require("./instagramEndpoint");
 
 var header = {
     "alg": "RS256",
@@ -153,7 +154,7 @@ router.get(serverConfig.loginUrl, (req, res) => {
 });
 
 //Used to get random images for display in the show
-router.get(serverConfig.randomImages, async (req, res) => {
+router.get(serverConfig.randomImages, (req, res) => {
     console.log("Random Images list");
     
     var filter = {
@@ -183,6 +184,52 @@ router.get(serverConfig.randomImages, async (req, res) => {
                     images: imagesResult
                 });
             }
+        });
+});
+
+//Used to get all captioned images for unlogined users
+router.get(serverConfig.allCaptionedImages, (req, res) => {
+    var pageOptions = {
+        pageNumber: parseInt(req.query.pageNumber) || 0,
+        pageSize: parseInt(req.query.pageSize) || 10
+    }
+
+    var filter = {
+        status: '4',
+        caption: {$ne: null}
+    };
+    Image.find(filter)
+        .skip(pageOptions.pageNumber * pageOptions.pageSize)
+        .limit(pageOptions.pageSize)
+        .populate({path: 'user', select: {name: 1, source: 1}})
+        .sort({created: -1})
+        .exec((err, images) => {
+            if(err) {
+                console.log(err);
+                //TODO return some predefined images
+                return res.status(500).send({ success: false, message: 'Image query failed' });
+            }
+    
+            var imagesResult = [];
+            images.forEach(image => {
+                imagesResult.push({
+                    "userId": image.user_id,
+                    "userName": image.user.name,
+                    "userSource": image.user.source,
+                    "url": image.url,
+                    "imageId": image.image_id,
+                    "status": image.status,
+                    color: image.color,
+                    caption: image.caption || "",
+                    "created": image.created
+                });
+            });
+    
+            return res.status(200).send({
+                success: true,
+                images: imagesResult
+            });
+    
         });
 });
 
@@ -349,7 +396,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
                 message: "Image uploading failed, try another image again."
             })
         }
-        var interActiveStatus = 1;
+        var interActiveStatus = 3;
         if(req.source == 2) {
             interActiveStatus = 0;
         }
@@ -411,6 +458,7 @@ router.get(serverConfig.userImageUrl, (req, res) => {
             ret.push({
                 userName: image.user.name,
                 userSource: image.user.source,
+                userId: image.user_id,
                 url: image.url,
                 imageId: image.image_id,
                 status: image.status,
@@ -781,9 +829,6 @@ function getCaptionResult(imageCaptionId, cb) {
         });
     }, 3000);
 }
-
-var targetMediaContent = "jarton";
-var instagramEndpoint = require("./instagramEndpoint");
 
 router.put("/target_image", (req, res) => {
     if(!req.isAdmin) {

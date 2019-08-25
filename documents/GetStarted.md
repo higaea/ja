@@ -37,7 +37,7 @@ curl -X GET \
 
 10. post a comment on an image
  curl -X POST \
- "https://graph.facebook.com/v3.2/17991148285255392/comments?message=Hi%20IGIG@DerekDu666&access_token=EAAg3U9spCgEBAI5C5iAZAin8uRSbA7YVojoho7Jdoz77YXiOabX77yVsp2RV4hycejBZBZCWb8AiYZA4xObvKvikDgxgIZBga34hANUG8FHupkRqog0yLKSZAPCAfNsJvRpX4LdpAhtyrLp6afTodhfklvmaR9MSLIc8pHGkcanSbSOI7vhdKaLQE1QFzqyquIpsyOtIw9AwZDZD"
+ "https://graph.facebook.com/v3.2/17862847066461005/comments?message=Hi%20IGIG%20@DerekDu666&access_token=EAAg3U9spCgEBANe9JS9b0uMaRILzf1jReHhJgNgo5ot8xbvWLfoKSA083vs2wDVgsl379Yt2xgIVaMEjK6XMyEELjY8QXeuxZBaeloNdZCgDI6ZCBnBqUdPZACbMLr7FYRlbMUgjTFG0SCNXYyFqwijcsn1BYa93UEyh8gEpjAZDZD"
 
 11. get comments on an image
 curl -X GET \

@@ -49,7 +49,16 @@ function instagramPostComment(userId, imageId, caption, cb) {
                     message: imageId + ": Failed to post comment, error: " + err
                 });
             } else {
-                var bodyJson = JSON.parse(body);
+                var bodyJson;
+                try{
+                    bodyJson = JSON.parse(body);
+                } catch(e) {
+                    return cb({
+                        success: false,
+                        message: imageId + ": Failed to post comment, error: " + e
+                    });
+                }
+
                 if(bodyJson.error) {
                     return cb({
                         success: false,
@@ -83,19 +92,19 @@ function commentTimer() {
                     instagramPostComment(images[i].user_id, images[i].image_id, images[i].caption, (postResult) => {
                         if(postResult.success) {
                             images[i].interActiveStatus = 1;
-                            images[i].updated = Date.now();
-                            images[i].save((err) => {
-                                if(err) {
-                                    console.error(images[i].image_id + ": Failed to update image interActiveStatus");
-                                    return;
-                                }
-                                console.log(images[i].image_id + ": Instagram comment post complete.")
-                                postRequestMap.delete(images[i].image_id);
-                            });
+                            
                         } else {
+                            images[i].interActiveStatus = 2;
                             console.error(postResult);
-                            postRequestMap.delete(images[i].image_id);
                         }
+                        images[i].updated = Date.now();
+                        images[i].save((err) => {
+                            if(err) {
+                                console.error(images[i].image_id + ": Failed to update image interActiveStatus");
+                            }
+                            console.log(images[i].image_id + ": Instagram comment post complete.")
+                        });
+                        postRequestMap.delete(images[i].image_id);
                     });
                 }
             }
@@ -125,7 +134,16 @@ function updateTargetMedia(targetMediaContent, cb) {
                 message: "Failed to get media objects"
             });
         } else {
-            var bodyJson = JSON.parse(body);
+            var bodyJson;
+            try {
+                bodyJson = JSON.parse(body);
+            } catch(e) {
+                console.error("Failed to update target media: " + e);
+                return cb({
+                    success: false,
+                    message: "Failed to get target media object: " + e
+                });
+            }
             var medias = bodyJson.data;
             
             let promiseArr = [];
@@ -137,7 +155,7 @@ function updateTargetMedia(targetMediaContent, cb) {
                 var targetMedia;
                 for(let j = 0; j < detailedImages.length; j++) {
                     let imageDetail = JSON.parse(detailedImages[j]);
-                    console.log("updateTargetMediaTimer: " + imageDetail);
+                    console.log("updateTargetMedia: " + imageDetail);
                     if(!targetMedia) {
                         targetMedia = imageDetail;
                     } else {

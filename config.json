@@ -18,6 +18,7 @@
         "images": "/images/list",
         "imageUpdate": "/images/update",
         "randomImages": "/images/display",
+        "allCaptionedImages": "/images/captioned/list",
 
         "databaseUrl": "mongodb://localhost:27017/ja"
         
