@@ -289,7 +289,7 @@ router.use((req, res, next) => {
     //     maxAge: 1000*60*60*24*7
     // });
     var userId = req.query.userId;
-    var userSource = req.query.source || '2';
+    var userSource = req.query.source;
     if(!userId) {
         return res.status(400).send({
             success: false,
@@ -445,7 +445,8 @@ router.get(serverConfig.userImageUrl, (req, res) => {
         pageSize: parseInt(req.query.pageSize) || 10
     }
 
-    var q1 = Image.find({user_id: userId, status: '4'})
+    var q1 = Image.find({user_id: userId})
+                .sort({status: 1})
                 .sort({created: -1})
                 .populate({path: 'user', select: {name: 1, source: 1}});
     var q2 = Image.find({user_id: {$ne: userId}, status: '4'})
