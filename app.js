@@ -42,7 +42,7 @@ app.use("/public/images", express.static(path.join(__dirname, "/public/images"))
 app.use('/api', api);
 
 mongoose.Promise = global.Promise;
-mongoose.connect(config.serverConfig.databaseUrl);
+mongoose.connect(config.serverConfig.databaseUrl, {useNewUrlParser: true});
 
 var captionEndpoint = require("./routes/captionEndpoint.js");
 captionEndpoint.captionRequestTimer();

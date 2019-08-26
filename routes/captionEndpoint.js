@@ -33,7 +33,7 @@ function invokeCaption(imageId, url, cb) {
         }, (err, resp, body) => {
             if(err || resp.statusCode != 200) {
                 if(err) {
-                    console.log(err);
+                    console.error(imageId + ": Send caption requestion error, " + err);
                 }
                 return cb({
                     success: false,
@@ -85,8 +85,7 @@ function captionRequestTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(err);
-                                    console.error("Failed to save caption request, image: " + images[i].image_id);
+                                    console.error(images[i].image_id + ": Failed to save caption request, " + err);
                                 }
                                 captionRequestMap.delete(images[i].image_id);
                                 invalidCaptionRequestImageMap.delete(images[i].image_id);
@@ -126,7 +125,7 @@ function captionRequestTimer() {
 
 
 function getCaptionResult(imageId, imageCaptionId, cb) {
-    console.log("Try to get image caption, image id: " + imageId + ", caption id: " + imageCaptionId);
+    console.log(imageId + ": Try to get image caption, image id: " + ", caption id: " + imageCaptionId);
     var reqUrl = captionConfig.captionResultUrl.replace(":image_caption_id", imageCaptionId);
     request.get(reqUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
@@ -187,8 +186,7 @@ function captionResultTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(err);
-                                    console.error("Failed to save caption, image: " + images[i].image_id);
+                                    console.error(images[i].image_id + ": Failed to save caption, " + err);
                                 }
                                 invalidCaptionResultImageMap.delete(images[i].image_id);                                
                             });
@@ -201,8 +199,7 @@ function captionResultTimer() {
                                     images[i].updated = Date.now();
                                     images[i].save((err) => {
                                         if(err) {
-                                            console.error(err);
-                                            console.error("Failed to get caption, image: " + images[i].image_id);
+                                            console.error(images[i].image_id + ": Failed to get caption, " + err);
                                         }
                                     });
                                     invalidCaptionResultImageMap.delete(images[i].image_id);

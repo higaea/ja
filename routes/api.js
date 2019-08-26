@@ -49,14 +49,10 @@ var storage = multer.diskStorage({
     }
 });
 
-var limits = {
-    fieldSize: 10
-};
-    
 var upload = multer({
          storage: storage,
          limits: {
-             fieldSize: 10
+             fieldSize: 1
         }
         //  fileFilter: (req, file, cb) => {
         //     // if the file extension is in our accepted list
@@ -104,7 +100,7 @@ router.post(serverConfig.signupUrl, (req, res) => {
 
         user.save((err) => {
             if(err) {
-                console.log(err);
+                console.error("Save user error, " + err);
                 return res.status(401).send({success: false, message: 'Sign up failed'});
             }
             var token = generateToken({
@@ -205,7 +201,7 @@ router.get(serverConfig.allCaptionedImages, (req, res) => {
         .sort({created: -1})
         .exec((err, images) => {
             if(err) {
-                console.log(err);
+                console.error("Failed to query images, " + err);
                 //TODO return some predefined images
                 return res.status(500).send({ success: false, message: 'Image query failed' });
             }
@@ -256,11 +252,11 @@ router.post("/youdonotknow", (req, res) => {
             }
         )
         .then(user => {
-            console.log(user);
+            console.log("Add a user: " + user);
             return res.send({success: true});
         })
         .catch(err => {
-            console.error(err);
+            console.error("Add user error, " + err);
             return res.status(403).send({success: false});
         })
 });
@@ -320,7 +316,7 @@ router.use((req, res, next) => {
                 });
                 user.save((err) => {
                     if(err) {
-                        console.log(err);
+                        console.error("Failed to save new user: " + err);
                         return res.status(500).send({
                             success: false, 
                             message: 'Failed to process request, try again later'
@@ -422,7 +418,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
     
         imageObj.save((err) => {
             if (err) {
-                console.log(err);
+                console.error("Failed to save new image: " + err);
                 return res.status(500).send({ success: false, message: 'Image uploading failed, try again.' });
             } else {
                 return res.status(200).send({
@@ -480,10 +476,10 @@ router.get(serverConfig.userImageUrl, (req, res) => {
         });
     })
     .catch(err => {
-        console.error(err);
+        console.error("Failed to get user's images, " + err);
         return res.status(500).send({
             success: false,
-            message: "Failed to get images, try later"
+            message: "Failed to get images, try again later"
         });
     });
 });
@@ -637,7 +633,7 @@ router.get(serverConfig.images, (req, res) => {
         .sort({created: -1})
         .exec((err, images) => {
             if(err) {
-                console.log(err);
+                console.error("Failed to get all images by admin, " + err);
                 return res.status(500).send({ success: false, message: 'Image query failed' });
             }
     
@@ -685,6 +681,7 @@ router.get(serverConfig.systemInfo, (req, res) => {
         });
     })
     .catch(err => {
+        console.error("Failed to get system info, " + err);
         return res.status(500).send({
             success: false,
             message: "Failed to get user info"
@@ -857,7 +854,7 @@ router.put("/target_image", (req, res) => {
     });
 });
 
-router.put("/change_instagram_comment", (req, res) => {
+router.put("/comment_toggle", (req, res) => {
     if(!req.isAdmin) {
         console.log("Warn: only admin can update instagram target image");
         return res.status(403).send({
