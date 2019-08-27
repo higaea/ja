@@ -44,13 +44,6 @@ app.use('/api', api);
 mongoose.Promise = global.Promise;
 mongoose.connect(config.serverConfig.databaseUrl, {useNewUrlParser: true});
 
-var captionEndpoint = require("./routes/captionEndpoint.js");
-captionEndpoint.captionRequestTimer();
-captionEndpoint.captionResultTimer();
-
-var instagramEndpoint = require("./routes/instagramEndpoint.js");
-instagramEndpoint.commentTimer();
-
 const appid = 'wx153892d5b43e7bd1';
 const appsecret = '565e8888db8a104d718ee45ab4233dc0';
 

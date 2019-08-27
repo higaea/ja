@@ -98,3 +98,11 @@ instagramEndpoint 52 unexpected json, catch expection, err handle
 image status update endpoint, togglz, 
 
 return predefined image list for show?
+
+Timer modules like captionEndpoint and instagramEndpoint cannot be used in cluster mode
+image upload can use another port, but https would not work, as https port couldn't be the same one?
+
+
+1. upload all sample images
+2. image upload compress, or try another upload method
+3. caption docker cluster

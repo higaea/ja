@@ -200,6 +200,8 @@ function captionResultTimer() {
                                     images[i].save((err) => {
                                         if(err) {
                                             console.error(images[i].image_id + ": Failed to get caption, " + err);
+                                        } else {
+                                            console.error(images[i].image_id + ": Reach the getting caption result max cnt, ignore.");
                                         }
                                     });
                                     invalidCaptionResultImageMap.delete(images[i].image_id);

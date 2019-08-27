@@ -834,7 +834,7 @@ function getCaptionResult(imageCaptionId, cb) {
     }, 3000);
 }
 
-router.put("/target_image", (req, res) => {
+router.put(serverConfig.updateInstagramTargetImage, (req, res) => {
     if(!req.isAdmin) {
         console.log("Warn: only admin can update instagram target image");
         return res.status(403).send({
@@ -854,7 +854,7 @@ router.put("/target_image", (req, res) => {
     });
 });
 
-router.put("/comment_toggle", (req, res) => {
+router.put(serverConfig.updateCommentToggle, (req, res) => {
     if(!req.isAdmin) {
         console.log("Warn: only admin can update instagram target image");
         return res.status(403).send({
