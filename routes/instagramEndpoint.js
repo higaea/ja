@@ -26,6 +26,84 @@ var instagramCommentToggle = 1;
 
 var postRequestMap = new Map();
 
+var serverConfig = config.serverConfig;
+
+router.use((req, res, next) => {
+    var userId = req.query.userId;
+    if(!userId) {
+        if(!userId) {
+            return res.status(400).send({
+                success: false,
+                message: 'User Id cannot be empty'
+            });
+        }
+    }
+    userId = userId.toLowerCase();
+    User.findOne({user_id: userId}, (err, user) => {
+        if(err) {
+            return res.status(500).send({
+                success: false,
+                message: 'System error, try again later'
+            });
+        } else {
+            if(!user) {
+                return res.status(500).send({
+                    success: false,
+                    message: 'Cannot find the user'
+                });
+            } else {
+                req.isAdmin = (user.role == 1);
+                    
+                next();
+            }
+        }
+    });
+});
+
+router.put(serverConfig.updateInstagramTargetImage, (req, res) => {
+    if(!req.query.content) {
+        return res.status(400).send({
+            success: false,
+            message: "Parameter content required"
+        });
+    }
+
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update instagram target image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
+
+    updateTargetMedia(req.query.content, ret => {
+        return res.send(ret)
+    });
+});
+
+router.put(serverConfig.updateCommentToggle, (req, res) => {
+    if(!req.isAdmin) {
+        console.log("Warn: only admin can update instagram target image");
+        return res.status(403).send({
+            success: false,
+            message: "Permission denied"
+        });
+    }
+    if(!req.query.toggle) {
+        return res.status(400).send({
+            success: false,
+            message: "Parameter toggle required"
+        });
+    }
+
+    instagramCommentToggle = req.query.toggle;
+    return res.send({
+        success: true,
+        instagramCommentToggle: req.query.toggle
+    });
+});
+
+
 function instagramPostComment(userId, imageId, caption, cb) {
     console.log(imageId + ": Start post Instagram comment.");
     if(postRequestMap.get(imageId) === 1) {
@@ -198,12 +276,7 @@ function updateTargetMedia(targetMediaContent, cb) {
 }
 
 
-function setToggle(toggle) {
-    instagramCommentToggle = toggle;
-}
-
 module.exports = {
     commentTimer: commentTimer,
-    updateTargetMedia: updateTargetMedia,
-    instagramCommentToggle: setToggle
+    router: router
 };

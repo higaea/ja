@@ -21,7 +21,7 @@
         "allCaptionedImages": "/images/captioned/list",
 
         "updateInstagramTargetImage": "/target_image",
-        "updateCommentToggle": "comment_toggle",
+        "updateCommentToggle": "/comment_toggle",
 
         "databaseUrl": "mongodb://localhost:27017/ja"
         

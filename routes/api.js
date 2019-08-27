@@ -298,6 +298,7 @@ router.use((req, res, next) => {
             message: 'User source is invalid'
         });
     }
+    userId = userId.toLowerCase();
     User.findOne({user_id: userId}, (err, user) => {
         if(err) {
             return res.status(500).send({
@@ -833,48 +834,6 @@ function getCaptionResult(imageCaptionId, cb) {
         });
     }, 3000);
 }
-
-router.put(serverConfig.updateInstagramTargetImage, (req, res) => {
-    if(!req.isAdmin) {
-        console.log("Warn: only admin can update instagram target image");
-        return res.status(403).send({
-            success: false,
-            message: "Permission denied"
-        });
-    }
-    if(!req.query.content) {
-        return res.status(400).send({
-            success: false,
-            message: "Parameter content required"
-        });
-    }
-
-    instagramEndpoint.updateTargetMedia(req.query.content, ret => {
-        return res.send(ret)
-    });
-});
-
-router.put(serverConfig.updateCommentToggle, (req, res) => {
-    if(!req.isAdmin) {
-        console.log("Warn: only admin can update instagram target image");
-        return res.status(403).send({
-            success: false,
-            message: "Permission denied"
-        });
-    }
-    if(!req.query.toggle) {
-        return res.status(400).send({
-            success: false,
-            message: "Parameter toggle required"
-        });
-    }
-
-    instagramEndpoint.instagramCommentToggle(req.query.toggle);
-    return res.send({
-        success: true,
-        instagramCommentToggle: req.query.toggle
-    });
-});
 
 function generateToken(payLoad) {
     return tokenType + jwt.sign(payLoad, privateCert, jwtSignOption);
