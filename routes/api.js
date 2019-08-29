@@ -8,6 +8,9 @@ const multer = require('multer');
 // const fileType = require('file-type');
 const request = require('request');
 const average = require('image-average-color');
+const getColors = require('get-image-colors')
+
+
 
 const User = require('../models/user');
 const Image = require('../models/image');
@@ -229,6 +232,34 @@ router.get(serverConfig.allCaptionedImages, (req, res) => {
         });
 });
 
+//get single image detail
+router.get(serverConfig.imageDetails, (req, res) => {
+    var imageId = req.query.imageId;
+    Image.findOne({image_id: imageId})
+        .populate({path: 'user', select: {name: 1, source: 1}})
+        .exec((err, image) => {
+        if(err || !image) {
+            return res.send({
+                success: false,
+                message: "Failed to get image details"
+            });
+        } else {
+            return res.send({
+                success: true,
+                image: {
+                    url: image.url,
+                    userId: image.user_id,
+                    userName: image.user.name,
+                    userSource: image.user.source,
+                    color: image.color,
+                    caption: image.caption || "",
+                    status: image.status
+                }
+            })
+        }
+    });
+});
+
 router.post("/youdonotknow", (req, res) => {
     var name = req.body.name;
     var role = req.body.role;
@@ -390,14 +421,20 @@ router.get(serverConfig.userDetailUrl, (req, res, err) => {
 //upload image
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
     var image = req.file;
-    
+    // getColors(image.path).then(colors => {
+    //     colors.forEach(
+    //         c=>console.log(c.getColors)
+    //     )
+    // });
+
     average(image.path, (err, color) => {
         if (err) {
             console.error(image.path + ", Cannot calculate average color: " + err);
-            return res.status(400).send({
-                success: false,
-                message: "Image uploading failed, try another image again."
-            })
+            // return res.status(400).send({
+            //     success: false,
+            //     message: "Image uploading failed, try another image again."
+            // })
+            color = [165, 160, 126, 255];
         }
         var interActiveStatus = 3;
         if(req.source == 2) {
@@ -529,34 +566,6 @@ router.get(serverConfig.userImageUrl+"v0", (req, res) => {
                 });
             }
         });
-});
-
-//get single image detail
-router.get(serverConfig.imageDetails, (req, res) => {
-    var imageId = req.query.imageId;
-    Image.findOne({image_id: imageId})
-        .populate({path: 'user', select: {name: 1, source: 1}})
-        .exec((err, image) => {
-        if(err || !image) {
-            return res.send({
-                success: false,
-                message: "Failed to get image details"
-            });
-        } else {
-            return res.send({
-                success: true,
-                image: {
-                    url: image.url,
-                    userId: image.user_id,
-                    userName: image.user.name,
-                    userSource: image.user.source,
-                    color: image.color,
-                    caption: image.caption || "",
-                    status: image.status
-                }
-            })
-        }
-    });
 });
 
 //update image status
@@ -896,7 +905,7 @@ function validate_format(req, res, next) {
     if(image.size < imageConfig.min_size || image.size > imageConfig.max_size) {
         return res.send({
             success: false,
-            message: 'Image size should be between [50K, 4M]'
+            message: 'Image size should be between [10K, 4M]'
         });
     }
     next();

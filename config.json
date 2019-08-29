@@ -28,7 +28,7 @@
     },
     "imageConfig": {
         "type": ["jpg", "png", "jpeg"],
-        "min_size": 51200,
+        "min_size": 10240,
         "max_size": 4194304
     },
     "instagramConfig": {

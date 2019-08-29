@@ -106,3 +106,6 @@ image upload can use another port, but https would not work, as https port could
 1. upload all sample images
 2. image upload compress, or try another upload method
 3. caption docker cluster
+
+1. querying images should filter with valid status, so that we could delete image softly
+2. mongoose pagination performance?
