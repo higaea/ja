@@ -196,8 +196,10 @@ function captionResultTimer() {
                             let c = invalidCaptionResultImageMap.get(images[i].image_id);
                             if(c) {
                                 if(c > 20) {
-                                    images[i].status = "6";
+                                    images[i].status = "4";
+                                    images[i].interActiveStatus = "0";
                                     images[i].updated = Date.now();
+                                    images[i].caption = "No Caption";
                                     images[i].save((err) => {
                                         if(err) {
                                             console.error(images[i].image_id + ": Failed to get caption, " + err);
