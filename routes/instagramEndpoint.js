@@ -22,7 +22,7 @@ var getMediaListUrl = instagramAPI + jartonBizAccount + "/media?" + "access_toke
 var getMediaDetailsUrl = instagramAPI + "MEDIAID?" + "access_token=" + access_token 
             + "&fields=caption,timestamp";
 
-var instagramCommentToggle = 1;
+var instagramCommentToggle = 0;
 
 var postRequestMap = new Map();
 
