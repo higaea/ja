@@ -212,67 +212,8 @@ router.get(serverConfig.randomNewImages, async (req, res) => {
 
 });
 
-//FOR TEST, remove later
-//Used to get the latest captioned images for display in the show
-router.get(serverConfig.randomImages, async (req, res) => {
-    console.log("Random new Images list");
-    try{
-        var imagesResult = [];
-        var filterNewImages = {
-            status: '4',
-            caption: {$ne: null},
-            updated: { $gt: new Date(Date.now() - 2 * 60 * 1000) }
-        };
-        var newImages = await Image.find(filterNewImages).limit(10);
-        newImages.forEach(image => {
-            imagesResult.push({
-                "url": image.url,
-                "imageId": image.image_id,
-                "status": image.status,
-                color: image.color,
-                caption: image.caption || "",
-                "created": image.created,
-                "updated": image.updated
-            });
-        });
-        if(newImages.length < 10) {
-            var filter = {
-                status: '4',
-                caption: {$ne: null}
-            };
-            var randomImages = await Image.aggregate([{$match: filter}, {$sample: {size: 10 - newImages.length}}]);
-            randomImages.forEach(rImage => {
-                imagesResult.push({
-                    "url": rImage.url,
-                    "imageId": rImage.image_id,
-                    "status": rImage.status,
-                    color: rImage.color,
-                    caption: rImage.caption || "",
-                    "created": rImage.created,
-                    "updated": rImage.updated
-                });
-            });
-        }
-
-        return res.send({
-            success: true,
-            images: imagesResult
-        });
-    } catch(err) {
-        //TODO return predefined images
-        console.error("###Get randomNewImages Error: " + err);
-        console.error("PredefinedImages returned...");
-        return res.send({
-            success: true,
-            images: preDefindedImageList
-        });
-    }
-
-
-});
-
 //Used to get random images for display in the show
-router.get(serverConfig.randomImages+"remove_this", (req, res) => {
+router.get(serverConfig.randomImages, (req, res) => {
     console.log("Random Images list");
     
     var filter = {

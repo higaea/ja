@@ -95,6 +95,11 @@ app.get('/videoDetail', async (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
+app.get('/videoDetailNew', async (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.sendFile(`${__dirname}/index.html`);
+});
+
 
 http.createServer(app).listen(port, function() {
   console.log('Server started at port: ' + port);
