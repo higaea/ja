@@ -486,20 +486,30 @@ router.get(serverConfig.userDetailUrl, (req, res, err) => {
 //upload image
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
     var image = req.file;
-    // getColors(image.path).then(colors => {
-    //     colors.forEach(
-    //         c=>console.log(c.getColors)
-    //     )
-    // });
 
-    average(image.path, (err, color) => {
+    average(image.path, async (err, color) => {
         if (err) {
-            console.error(image.path + ", Cannot calculate average color: " + err);
+            console.error(image.path + ": Cannot calculate average color: " + err);
             // return res.status(400).send({
             //     success: false,
             //     message: "Image uploading failed, try another image again."
             // })
-            color = [165, 160, 126, 255];
+            try{
+                var colors = await getColors(image.path);
+                var colorsArr = [0, 0, 0, 255];
+                await colors.forEach(c => {
+                    colorsArr[0] = colorsArr[0] + c._rgb[0];
+                    colorsArr[1] = colorsArr[1] + c._rgb[1];
+                    colorsArr[2] = colorsArr[2] + c._rgb[2];        
+                });
+                colorsArr[0] = Math.round(colorsArr[0] / colors.length);
+                colorsArr[1] = Math.round(colorsArr[1] / colors.length);
+                colorsArr[2] = Math.round(colorsArr[2] / colors.length);
+                color = colorsArr;
+            } catch(e) {
+                console.error(image.path + ": Re-calulate color error: " + e);
+                color = [165, 160, 126, 255];
+            }
         }
         var interActiveStatus = 3;
         if(req.source == 2) {
