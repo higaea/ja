@@ -2,8 +2,6 @@ const _ = require('lodash');
 const OSS = require('ali-oss');
 const fs = require('fs');
 
-const keyId = 'LTAII4o91CNTuhk0';
-const keySecret = 'yBDbJCcZatvMw8qLqeIltDwByxNM60';
 
 function AliOssClient({ bucket, region }) {
     if (!(this instanceof AliOssClient)) {
