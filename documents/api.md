@@ -157,6 +157,7 @@ response:
                     }
                 ]   
     }
+
 11. get all captioned images for unlogined users
 GET /images/captioned/list
 response:
@@ -177,3 +178,22 @@ response:
                 ]   
     }
 
+12. get all new captioned images for random display, return 10 new random images (NEW means the latest 2 minutes captioned)
+GET /api/images/displaynew
+response:
+    {
+        "success": true
+        "images": [
+                    {
+                        "url": "/image.xxx",
+                        "imageId": "",
+                        "userId": "",
+                        "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
+                        "status": ""
+                        "created": created time
+                    },
+                    {
+                    }
+                ]   
+    }

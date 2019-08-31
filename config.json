@@ -18,6 +18,7 @@
         "images": "/images/list",
         "imageUpdate": "/images/update",
         "randomImages": "/images/display",
+        "randomNewImages": "/images/displaynew",
         "allCaptionedImages": "/images/captioned/list",
 
         "updateInstagramTargetImage": "/target_image",
@@ -41,5 +42,136 @@
     "captionConfig": {
         "captionRequestUrl": "http://www.jarton.cn:5000/addurl",
         "captionResultUrl": "http://www.jarton.cn:5000/caption/:image_caption_id"
-    }
+    },
+    "preDefindedImages": [
+        {
+            "url": "public/images/8NixRzBCu1XMZsf6-1567211200843.jpg",
+            "imageId": "bDhjCl5GyxR3h6DS3xHadJAQGuCjg8WB",
+            "status": "4",
+            "color": [
+                128,
+                60,
+                75,
+                255
+            ],
+            "caption": "a table topped with a vase of flowers",
+            "created": "2019-08-31T00:26:41.447Z"
+        },
+        {
+            "url": "public/images/5Y4iaWumkUFyVANx-1567211311238.jpg",
+            "imageId": "3RLgKMwEsLNm3I2PoMahTvFk6r4oH7ll",
+            "status": "4",
+            "color": [
+                118,
+                131,
+                121,
+                255
+            ],
+            "caption": "a woman is sitting on a bench in the grass",
+            "created": "2019-08-31T00:28:31.901Z"
+        },
+        {
+            "url": "public/images/9aedIZG0UuMOkagq-1567211592603.jpg",
+            "imageId": "3IFyJTV9CfAmJ1g8wIDx9EiBFq1qGnJj",
+            "status": "4",
+            "color": [
+                128,
+                113,
+                95,
+                255
+            ],
+            "caption": "a room with a lot of books on it",
+            "created": "2019-08-31T00:33:13.594Z"
+        },
+        {
+            "url": "public/images/KBOCmv0wDAvG8OhA-1567051193375.jpg",
+            "imageId": "mLHrHdtLnav9LY6aa3ZJtL9mhNpvjkEq",
+            "status": "4",
+            "color": [
+                165,
+                160,
+                126,
+                255
+            ],
+            "caption": "a bunch of stuffed animals sitting on a shelf",
+            "created": "2019-08-29T03:59:59.576Z"
+        },
+        {
+            "url": "public/images/RX2ZkTjicHoUde4O-1567205077670.jpg",
+            "imageId": "bBe9u0IsJ9dfXMRF7wK39SXTtbtuckhC",
+            "status": "4",
+            "color": [
+                126,
+                113,
+                96,
+                255
+            ],
+            "caption": "a bunch of different types of food on a counter",
+            "created": "2019-08-30T22:44:38.320Z"
+        },
+        {
+            "url": "public/images/o7jE4iiOpCv2A85L-1567169573061.jpg",
+            "imageId": "zMYPs8ZbwGDqsezCm7BmrZ70sEqwn4Sa",
+            "status": "4",
+            "color": [
+                59,
+                43,
+                35,
+                255
+            ],
+            "caption": "a desk with a laptop and a monitor",
+            "created": "2019-08-30T12:52:53.759Z"
+        },
+        {
+            "url": "public/images/dmE4nvfmlijrharD-1567211783623.jpg",
+            "imageId": "HEcWzy6v0aPEYuZmv402LArw35ao4PHx",
+            "status": "4",
+            "color": [
+                159,
+                160,
+                155,
+                255
+            ],
+            "caption": "a man is standing in front of a building",
+            "created": "2019-08-31T00:36:24.583Z"
+        },
+        {
+            "url": "public/images/uF8CkS1GtAbM85vl-1567204700051.jpg",
+            "imageId": "BX2Lkc4mNRxsRApb7wEnp9Vs1893vWh8",
+            "status": "4",
+            "color": [
+                155,
+                137,
+                122,
+                255
+            ],
+            "caption": "a bathroom with a toilet and a sink",
+            "created": "2019-08-30T22:38:21.394Z"
+        },
+        {
+            "url": "public/images/IxDbPx4qUhIXqFRc-1567205799215.jpg",
+            "imageId": "2cBbPkhKm7sMAOouVnldstJkmxTwGeMd",
+            "status": "4",
+            "color": [
+                131,
+                127,
+                137,
+                255
+            ],
+            "caption": "a view of a mountain range from a plane",
+            "created": "2019-08-30T22:56:39.830Z"
+        },
+        {
+            "url": "public/images/Y0r2aQ7lQyMQKKnd-1567167127731.jpg",
+            "imageId": "a0IzE9WyTuvrGvrMdIDaBTnTuUlPXMy7",
+            "status": "4",
+            "color": [
+                148,
+                138,
+                142,
+                255
+            ],
+            "caption": "a man sitting on a beach with a dog in the background",
+            "created": "2019-08-30T12:12:08.909Z"
+        }]
 }

@@ -191,7 +191,7 @@ function commentTimer() {
                 }
             }
         });
-    }, 10000)
+    }, 15000)
     
 }
 

@@ -109,3 +109,4 @@ image upload can use another port, but https would not work, as https port could
 
 1. querying images should filter with valid status, so that we could delete image softly
 2. mongoose pagination performance?
+3. post comment may be blocked by instagram, need to figure out how often to post a comment?
