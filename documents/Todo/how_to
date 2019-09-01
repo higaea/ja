@@ -110,3 +110,7 @@ image upload can use another port, but https would not work, as https port could
 1. querying images should filter with valid status, so that we could delete image softly
 2. mongoose pagination performance?
 3. post comment may be blocked by instagram, need to figure out how often to post a comment?
+
+1. should control the amount of reviewed images. don't load all the reviewed images to request caption
+2. double check the case when a captioning/captioned image get reviewed again.
+3. check the caption docker, how the captioned images stored in the docker? too many images?

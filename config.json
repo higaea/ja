@@ -41,7 +41,7 @@
     },
     "captionConfig": {
         "captionRequestUrl": "http://www.jarton.cn:5000/addurl",
-        "captionResultUrl": "http://www.jarton.cn:5000/caption/:image_caption_id"
+        "captionResultUrl": "http://www.jarton.cn:port/caption/:image_caption_id"
     },
     "preDefindedImages": [
         {

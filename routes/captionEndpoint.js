@@ -14,10 +14,10 @@ var invalidCaptionResultImageMap = new Map();
 
 function invokeCaption(imageId, url, cb) {
     if(captionRequestMap.get(imageId) === 1) {
-        console.log(imageId + ": already sent caption request, ignore");
+        console.log(imageId + ": " + (new Date()).toUTCString + ": already sent caption request, ignore");
         return;
     }
-    console.log(imageId + ": Start send caption request");
+    console.log(imageId + ": " + (new Date()).toUTCString + ": Start send caption request");
     captionRequestMap.set(imageId, 1);
     var requestbody = {
         "url": url
@@ -33,19 +33,19 @@ function invokeCaption(imageId, url, cb) {
         }, (err, resp, body) => {
             if(err || resp.statusCode != 200) {
                 if(err) {
-                    console.error(imageId + ": Send caption requestion error, " + err);
+                    console.error(imageId + ": " + (new Date()).toUTCString + ": Send caption requestion error, " + err);
                 }
                 return cb({
                     success: false,
                     message: imageId + ": Failed to send caption request, please try again"
                 });
             } else {
-                console.log(imageId + ": CaptionId returned: " + body);
+                console.log(imageId + ": " + (new Date()).toUTCString + ": CaptionId returned: " + body);
                 var bodyJson;
                 try{
                     bodyJson = JSON.parse(body);
                 } catch(e) {
-                    console.error(imageId + ": Parse caption request body exception: " + e);
+                    console.error(imageId + ": " + (new Date()).toUTCString + ": Parse caption request body exception: " + e);
                     return cb({
                         success: false,
                         message: imageId + ": Parse caption request body exception: " + e
@@ -60,7 +60,8 @@ function invokeCaption(imageId, url, cb) {
                 } else {
                     return cb({
                         success: true,
-                        imageCaptionId: bodyJson.sha256sum 
+                        imageCaptionId: bodyJson.sha256sum,
+                        captionServer: bodyJson.port
                     });
                 }
             }
@@ -81,11 +82,12 @@ function captionRequestTimer() {
                     invokeCaption(images[i].image_id, domain + images[i].url, (reqResult) => {
                         if(reqResult.success) {
                             images[i].caption_id = reqResult.imageCaptionId;
+                            images[i].port = reqResult.captionServer;
                             images[i].status = "3";
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(images[i].image_id + ": Failed to save caption request, " + err);
+                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to save caption request, " + err);
                                 }
                                 captionRequestMap.delete(images[i].image_id);
                                 invalidCaptionRequestImageMap.delete(images[i].image_id);
@@ -100,9 +102,9 @@ function captionRequestTimer() {
                                     images[i].save((err) => {
                                         if(err) {
                                             console.error(err);
-                                            console.error(images[i].image_id + ": Failed to request caption");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to request caption");
                                         } else {
-                                            console.error(images[i].image_id + ": Reach max request caption cnt");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Reach max request caption cnt");
                                         }
                                         captionRequestMap.delete(images[i].image_id);
                                         invalidCaptionRequestImageMap.delete(images[i].image_id);
@@ -124,13 +126,13 @@ function captionRequestTimer() {
 }
 
 
-function getCaptionResult(imageId, imageCaptionId, cb) {
-    console.log(imageId + ": Try to get image caption, image id: " + ", caption id: " + imageCaptionId);
-    var reqUrl = captionConfig.captionResultUrl.replace(":image_caption_id", imageCaptionId);
+function getCaptionResult(imageId, imageCaptionId, captionServer, cb) {
+    console.log(imageId + ": " + (new Date()).toUTCString + ": Try to get image caption, image id: " + ", caption id: " + imageCaptionId + ", port: " + captionServer);
+    var reqUrl = captionConfig.captionResultUrl.replace("port", captionServer).replace(":image_caption_id", imageCaptionId);
     request.get(reqUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
             if(err) {
-                console.error(imageId + ": Error: get CaptionResult: " + err);
+                console.error(imageId + ": " + (new Date()).toUTCString + ": Error: get CaptionResult: " + err);
             }
             return cb({
                 success: false,
@@ -150,13 +152,13 @@ function getCaptionResult(imageId, imageCaptionId, cb) {
 
             if(rr.error) {
                 //wait a while
-                console.log(imageId + ": still waiting for caption result...");
+                console.log(imageId + ": " + (new Date()).toUTCString + ": still waiting for caption result...");
                 return cb({
                     success: false,
                     message: imageId + ": still waiting for captin result"
                 });
             } else {
-                console.log(imageId + ": Got image caption, caption: " + rr.caption);
+                console.log(imageId + ": " + (new Date()).toUTCString + ": Got image caption, caption: " + rr.caption);
                 return cb({
                     success: true,
                     caption: rr.caption,
@@ -179,7 +181,7 @@ function captionResultTimer() {
                     console.error("captionRequestTimer: Failed to look for captioning images, " + err);
                 }
                 for(let i = 0; i < images.length; i++) {
-                    getCaptionResult(images[i].image_id, images[i].caption_id, (reqResult) => {
+                    getCaptionResult(images[i].image_id, images[i].caption_id, images[i].port, (reqResult) => {
                         if(reqResult.success) {
                             images[i].caption = reqResult.caption;
                             images[i].status = "4";
@@ -187,7 +189,7 @@ function captionResultTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(images[i].image_id + ": Failed to save caption, " + err);
+                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to save caption, " + err);
                                 }
                                 invalidCaptionResultImageMap.delete(images[i].image_id);                                
                             });
@@ -202,9 +204,9 @@ function captionResultTimer() {
                                     images[i].caption = "No Caption";
                                     images[i].save((err) => {
                                         if(err) {
-                                            console.error(images[i].image_id + ": Failed to get caption, " + err);
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to get caption, " + err);
                                         } else {
-                                            console.error(images[i].image_id + ": Reach the getting caption result max cnt, ignore.");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Reach the getting caption result max cnt, ignore.");
                                         }
                                     });
                                     invalidCaptionResultImageMap.delete(images[i].image_id);

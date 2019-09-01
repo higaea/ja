@@ -37,7 +37,10 @@ const ImageSchema = new Schema({
         ref: 'User'
     },
     interActiveStatus: {
-        type: String, default: "0" //0:Need, 1: Commented, 2: Error Commented, 3: No Need
+        type: String, default: '0' //0:Need, 1: Commented, 2: Error Commented, 3: No Need
+    },
+    port: {
+        type: String, default: '5000'
     }
 });
 
