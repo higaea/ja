@@ -74,7 +74,7 @@ function captionRequestTimer() {
         Image.find({
             "status": "2",
             "caption_id": ""
-        }).limit(5).exec((err, images) => {
+        }).limit(30).exec((err, images) => {
                 if(err) {
                     console.error("captionRequestTimer: Failed to look for reviewed images");
                 }
@@ -175,7 +175,7 @@ function captionResultTimer() {
     setInterval(() => {
         console.log("loading captioning images..");
         Image.find({"status": "3"})
-            .limit(10)
+            .limit(30)
             .exec((err, images) => {
                 if(err) {
                     console.error("captionRequestTimer: Failed to look for captioning images, " + err);
