@@ -78,7 +78,7 @@ var parseCaptions = function(cb){
   fs.readFile('/neuraltalk2/vis/vis.json', 'utf8',(err, data) => {
     if(err){
       latestOutcome = {timestamp:new Date().toISOString(), status:'error parsing the captions',detail:err};
-      return;
+      return cb();
     }
     var done = 0;
     JSON.parse(data).forEach(result => {
@@ -89,6 +89,7 @@ var parseCaptions = function(cb){
       done++;
     });
     latestOutcome = {timestamp:new Date().toISOString(), status:'OK',processed:done};
+    return cb();
   });
 };
 
@@ -113,6 +114,7 @@ setInterval(()=>{
           console.log(" +++ return code from neuraltalk2: "+retCode);
           if(retCode !== 0){
             latestOutcome = {timestamp:new Date().toISOString(), status:'failure', retCode:retCode};
+            isAlreadyRunning = false;
             return;
           }
           parseCaptions(()=> {
@@ -149,6 +151,10 @@ app.get('/caption/:sha256sum',function(req,res){
 });
 
 app.post('/addURL',function(req,http_res){
+  if(isAlreadyRunning) {
+    http_res.status(500).json({error:"caption server is busy, try later"});
+    return;
+  }
   if(typeof req.body.url !== 'string'){
     http_res.status(400).json({error:"url field must be present and be a string containing the URL of the image to process"});
     return;

@@ -40,8 +40,8 @@
         "postCommentOnMediaUrl": "https://graph.facebook.com/v3.2/:media_id/comments"
     },
     "captionConfig": {
-        "captionRequestUrl": "http://www.jarton.cn:5000/addurl",
-        "captionResultUrl": "http://www.jarton.cn:port/caption/:image_caption_id"
+        "captionRequestUrl": "http://47.91.93.111:5000/addurl",
+        "captionResultUrl": "http://47.91.93.111:port/caption/:image_caption_id"
     },
     "preDefindedImages": [
         {

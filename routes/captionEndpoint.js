@@ -14,10 +14,10 @@ var invalidCaptionResultImageMap = new Map();
 
 function invokeCaption(imageId, url, cb) {
     if(captionRequestMap.get(imageId) === 1) {
-        console.log(imageId + ": " + (new Date()).toUTCString + ": already sent caption request, ignore");
+        console.log(imageId + ": " + (new Date()).toUTCString() + ": already sent caption request, ignore");
         return;
     }
-    console.log(imageId + ": " + (new Date()).toUTCString + ": Start send caption request");
+    console.log(imageId + ": " + (new Date()).toUTCString() + ": Start send caption request");
     captionRequestMap.set(imageId, 1);
     var requestbody = {
         "url": url
@@ -33,19 +33,19 @@ function invokeCaption(imageId, url, cb) {
         }, (err, resp, body) => {
             if(err || resp.statusCode != 200) {
                 if(err) {
-                    console.error(imageId + ": " + (new Date()).toUTCString + ": Send caption requestion error, " + err);
+                    console.error(imageId + ": " + (new Date()).toUTCString() + ": Send caption requestion error, " + err);
                 }
                 return cb({
                     success: false,
                     message: imageId + ": Failed to send caption request, please try again"
                 });
             } else {
-                console.log(imageId + ": " + (new Date()).toUTCString + ": CaptionId returned: " + body);
+                console.log(imageId + ": " + (new Date()).toUTCString() + ": CaptionId returned: " + body);
                 var bodyJson;
                 try{
                     bodyJson = JSON.parse(body);
                 } catch(e) {
-                    console.error(imageId + ": " + (new Date()).toUTCString + ": Parse caption request body exception: " + e);
+                    console.error(imageId + ": " + (new Date()).toUTCString() + ": Parse caption request body exception: " + e);
                     return cb({
                         success: false,
                         message: imageId + ": Parse caption request body exception: " + e
@@ -72,8 +72,8 @@ function captionRequestTimer() {
     setInterval(() => {
         console.log("loading reviewed images..");
         Image.find({
-            "status": "2",
-            "caption_id": ""
+            "status": "2"
+            // "caption_id": ""
         }).limit(30).exec((err, images) => {
                 if(err) {
                     console.error("captionRequestTimer: Failed to look for reviewed images");
@@ -87,7 +87,7 @@ function captionRequestTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to save caption request, " + err);
+                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Failed to save caption request, " + err);
                                 }
                                 captionRequestMap.delete(images[i].image_id);
                                 invalidCaptionRequestImageMap.delete(images[i].image_id);
@@ -96,15 +96,15 @@ function captionRequestTimer() {
                             console.error(reqResult);
                             let c = invalidCaptionRequestImageMap.get(images[i].image_id);
                             if(c) {
-                                if(c >= 3) {
+                                if(c >= 20) {
                                     images[i].status = "6";
                                     images[i].updated = Date.now();
                                     images[i].save((err) => {
                                         if(err) {
                                             console.error(err);
-                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to request caption");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Failed to request caption");
                                         } else {
-                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Reach max request caption cnt");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Reach max request caption cnt");
                                         }
                                         captionRequestMap.delete(images[i].image_id);
                                         invalidCaptionRequestImageMap.delete(images[i].image_id);
@@ -121,22 +121,22 @@ function captionRequestTimer() {
                     });
                 }
             });
-    }, 5000);
+    }, 10000);
     
 }
 
 
 function getCaptionResult(imageId, imageCaptionId, captionServer, cb) {
-    console.log(imageId + ": " + (new Date()).toUTCString + ": Try to get image caption, image id: " + ", caption id: " + imageCaptionId + ", port: " + captionServer);
+    console.log(imageId + ": " + (new Date()).toUTCString() + ": Try to get image caption, image id: " + ", caption id: " + imageCaptionId + ", port: " + captionServer);
     var reqUrl = captionConfig.captionResultUrl.replace("port", captionServer).replace(":image_caption_id", imageCaptionId);
     request.get(reqUrl, (err, resp, body) => {
         if(err || resp.statusCode != 200) {
             if(err) {
-                console.error(imageId + ": " + (new Date()).toUTCString + ": Error: get CaptionResult: " + err);
+                console.error(imageId + ": " + (new Date()).toUTCString() + ": Error: get CaptionResult: " + err);
             }
             return cb({
                 success: false,
-                message: imageId + ": still waiting for captin result"
+                message: imageId + ": still waiting for caption result"
             });
         } else {
             var rr;
@@ -152,13 +152,13 @@ function getCaptionResult(imageId, imageCaptionId, captionServer, cb) {
 
             if(rr.error) {
                 //wait a while
-                console.log(imageId + ": " + (new Date()).toUTCString + ": still waiting for caption result...");
+                console.log(imageId + ": " + (new Date()).toUTCString() + ": still waiting for caption result...");
                 return cb({
                     success: false,
                     message: imageId + ": still waiting for captin result"
                 });
             } else {
-                console.log(imageId + ": " + (new Date()).toUTCString + ": Got image caption, caption: " + rr.caption);
+                console.log(imageId + ": " + (new Date()).toUTCString() + ": Got image caption, caption: " + rr.caption);
                 return cb({
                     success: true,
                     caption: rr.caption,
@@ -189,7 +189,7 @@ function captionResultTimer() {
                             images[i].updated = Date.now();
                             images[i].save((err) => {
                                 if(err) {
-                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to save caption, " + err);
+                                    console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Failed to save caption, " + err);
                                 }
                                 invalidCaptionResultImageMap.delete(images[i].image_id);                                
                             });
@@ -204,9 +204,9 @@ function captionResultTimer() {
                                     images[i].caption = "No Caption";
                                     images[i].save((err) => {
                                         if(err) {
-                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Failed to get caption, " + err);
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Failed to get caption, " + err);
                                         } else {
-                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString + ": Reach the getting caption result max cnt, ignore.");
+                                            console.error(images[i].image_id + ": " + (new Date()).toUTCString() + ": Reach the getting caption result max cnt, ignore.");
                                         }
                                     });
                                     invalidCaptionResultImageMap.delete(images[i].image_id);

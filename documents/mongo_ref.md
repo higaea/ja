@@ -27,6 +27,7 @@ docker cp index.js neuraltalk2-web-5005:/webapp/index.js
 - running the BASH
 
 		docker exec -it neuraltalk2-web bash
+		docker logs neuraltalk2-web
 
 - Getting the sha256sum:
 
