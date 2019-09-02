@@ -9,7 +9,7 @@ var helpers = require('./helpers');
 var NodeCache = require("node-cache");
 var uuid = require('uuid');
 var multer  = require('multer');
-var upload = multer({ dest: 'D:\\Gitspace\\luo\\t' });
+var upload = multer({ dest: '/tmp' });
 
 
 //this object will map the images SHA256 sums with their captions
@@ -27,7 +27,7 @@ nconf.argv().env();
 nconf.defaults({
   port: 5000,
   modelPath: '/mounted/model/model_id1-501-1448236541.t7_cpu.t7',
-  processFolder: 'D:\\Gitspace\\luo\\t1',
+  processFolder: '/processFolder/',
   useGPU: '-1'
 });
 
@@ -108,7 +108,7 @@ setInterval(()=>{
       if(i === pending.length -1){
         runNeuralTalk(retCode => {
           //time to parse the captions
-          isAlreadyRunning = false;
+          // isAlreadyRunning = false;
           pending = [];
           console.log(" +++ return code from neuraltalk2: "+retCode);
           if(retCode !== 0){
@@ -191,6 +191,7 @@ app.post('/upload',upload.single('file'), function (req, http_res, next) {
     fs.rename(newpath,newpath+'.'+res.extension);
     console.log({path:newpath+'.'+res.extension,sha256sum:res.sha256sum});
     pending.push({path:newpath+'.'+res.extension,sha256sum:res.sha256sum});
+    res.port = nconf.get('port');
     http_res.json(res);
   });
 });

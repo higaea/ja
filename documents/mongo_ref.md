@@ -12,7 +12,7 @@ http://www.jarton.cn:8080/target_image?userId=dhl&source=1&content=aaa //aaa is 
 http://www.jarton.cn:8080/comment_toggle?userId=dhl&source=1&toggle=1 //0: turn off, 1: turn on
 
 docker run -d -v /root/app:/root/app -w /root/app -p 80:80 -p 443:443 node app.js
-docker run -d --name neuraltalk2-web-5005 -p 5005:5005 -e "port=5005" -v /captiondata:/mounted jacopofar/neuraltalk2-web:latest
+docker run -d --name neuraltalk2-web-5001 -p 5001:5001 -e "port=5001" -v /captiondata:/mounted jacopofar/neuraltalk2-web:latest
 
 ## replace file in container
 #copy out
