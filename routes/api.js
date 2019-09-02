@@ -162,7 +162,7 @@ router.get(serverConfig.randomNewImages, async (req, res) => {
         var filterNewImages = {
             status: '4',
             caption: {$ne: null},
-            updated: { $gt: new Date(Date.now() - 2 * 60 * 1000) }
+            updated: { $gt: new Date(Date.now() - 3 * 60 * 1000) }
         };
         var newImages = await Image.find(filterNewImages).limit(10);
         newImages.forEach(image => {
