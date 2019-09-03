@@ -15,7 +15,7 @@ const instagramAPI = "https://graph.facebook.com/v4.0/";
 var access_token="EAAg3U9spCgEBANe9JS9b0uMaRILzf1jReHhJgNgo5ot8xbvWLfoKSA083vs2wDVgsl379Yt2xgIVaMEjK6XMyEELjY8QXeuxZBaeloNdZCgDI6ZCBnBqUdPZACbMLr7FYRlbMUgjTFG0SCNXYyFqwijcsn1BYa93UEyh8gEpjAZDZD";
 var jartonUserPage = "108544473825677";
 var jartonBizAccount = "17841416927087202";
-var mediaObjectId = "17862847066461005";
+var mediaObjectId = "17996839870260030";
 var postUrl = instagramAPI + mediaObjectId + "/comments?" 
             + "access_token=" + access_token + "&message=";
 var getMediaListUrl = instagramAPI + jartonBizAccount + "/media?" + "access_token=" + access_token;
