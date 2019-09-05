@@ -197,3 +197,24 @@ response:
                     }
                 ]   
     }
+
+13. get specific screen images, return 4 new images (the latest 5 minutes captioned)
+GET /api/images/display_screen?screen=9
+response:
+    {
+        "success": true
+        "images": [
+                    {
+                        "url": "/image.xxx",
+                        "imageId": "",
+                        "userId": "",
+                        "caption": "",
+                        "color": [129, 88, 88, 255], //red, green, blue, alpha
+                        "status": "",
+                        "screen": "9",
+                        "created": created time
+                    },
+                    {
+                    }
+                ]   
+    }

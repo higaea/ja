@@ -19,6 +19,7 @@
         "imageUpdate": "/images/update",
         "randomImages": "/images/display",
         "randomNewImages": "/images/displaynew",
+        "specificScreenImages": "/images/display_screen",
         "allCaptionedImages": "/images/captioned/list",
 
         "updateInstagramTargetImage": "/target_image",

@@ -155,6 +155,68 @@ router.get(serverConfig.loginUrl, (req, res) => {
 });
 
 //Used to get the latest captioned images for display in the show
+router.get(serverConfig.specificScreenImages, async (req, res) => {
+    console.log("specificScreen new Images list");
+    var specificScreen = req.query.screen || '0';
+    try{
+        var imagesResult = [];
+        var filterNewImages = {
+            status: '4',
+            caption: {$ne: null},
+            screen: specificScreen,
+            updated: { $gt: new Date(Date.now() - 5 * 60 * 1000) }
+        };
+        var newImages = await Image.find(filterNewImages).sort({"updated": -1}).limit(4);
+        newImages.forEach(image => {
+            imagesResult.push({
+                "url": image.url,
+                "imageId": image.image_id,
+                "status": image.status,
+                color: image.color,
+                caption: image.caption || "",
+                "screen": image.screen,
+                "created": image.created,
+                "updated": image.updated
+            });
+        });
+        if(newImages.length < 4) {
+            var filter = {
+                status: '4',
+                caption: {$ne: null}
+            };
+            var randomImages = await Image.aggregate([{$match: filter}, {$sample: {size: 4 - newImages.length}}]);
+            randomImages.forEach(rImage => {
+                imagesResult.push({
+                    "url": rImage.url,
+                    "imageId": rImage.image_id,
+                    "status": rImage.status,
+                    color: rImage.color,
+                    caption: rImage.caption || "",
+                    "screen": rImage.screen,
+                    "created": rImage.created,
+                    "updated": rImage.updated
+                });
+            });
+        }
+
+        return res.send({
+            success: true,
+            images: imagesResult
+        });
+    } catch(err) {
+        //TODO return predefined images
+        console.error("###Get randomNewImages Error: " + err);
+        console.error("PredefinedImages returned...");
+        return res.send({
+            success: true,
+            images: preDefindedImageList
+        });
+    }
+
+
+});
+
+//Used to get the latest captioned images for display in the show
 router.get(serverConfig.randomNewImages, async (req, res) => {
     console.log("Random new Images list");
     try{
@@ -486,6 +548,7 @@ router.get(serverConfig.userDetailUrl, (req, res, err) => {
 //upload image
 router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req, res, next) => {
     var image = req.file;
+    var screen = req.query.screen || '0';
 
     average(image.path, async (err, color) => {
         if (err) {
@@ -526,6 +589,7 @@ router.post(serverConfig.imageUrl, upload.single('image'), validate_format, (req
             interActiveStatus: interActiveStatus,
             created: Date.now(),
             updated: Date.now(),
+            screen: screen,
             user: req.user
         });
     

@@ -41,6 +41,9 @@ const ImageSchema = new Schema({
     },
     port: {
         type: String, default: '5000'
+    },
+    screen: {
+        type: String, default: '0'
     }
 });
 
