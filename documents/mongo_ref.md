@@ -5,6 +5,10 @@ db.images.find({"image_id": "XEPDuWYr7P8SKb1MvSTZCQR8ihlkAokj"})
 db.images.find({"user_id": "__test__", "status": "1"}, {image_id: 1, status: 1});
 db.images.update({"user_id": "__test__"}, {$set: {"status": "5"}})
 db.images.update({"image_id": "xc58w13lQ2R1haoaDEqE2Ic8fSkOoRJt", {$set: {"port": "5004"}}})
+db.images.update({"interActiveStatus": "0", "status": "4"}, {$set: {"interActiveStatus": "3"}})
+
+
+db.images.update({"interActiveStatus": "0", "status": "4"}, {$set: {"interActiveStatus": "3"}}, false, true)
 
 db.images.find({"user_id": "DerekDu666"})
 

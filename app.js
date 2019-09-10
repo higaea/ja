@@ -36,7 +36,6 @@ app.all('*', function(req, res, next) {
 });
 
 
-// app.use("/private", express.static(path.join(__dirname, "/private")));
 app.use("/public/web", express.static(path.join(__dirname, "/public/web"), {maxAge:10000}));
 app.use("/public/images", express.static(path.join(__dirname, "/public/images"), {maxAge:10000}));
 

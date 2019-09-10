@@ -387,38 +387,6 @@ router.get(serverConfig.imageDetails, (req, res) => {
     });
 });
 
-router.post("/youdonotknow", (req, res) => {
-    var name = req.body.name;
-    var role = req.body.role;
-    console.error("you donot know invoked...");
-    if(req.query.ad !== "magic") {
-        return res.send({success: "NA"});
-    }
-    User.findOneAndUpdate(
-            {
-                name: req.body.name
-            }, 
-            {
-                name: req.body.name, 
-                user_id: req.body.name, 
-                source: req.body.source, 
-                role: req.body.role, 
-                created: Date.now()
-            },
-            {
-                upsert: true
-            }
-        )
-        .then(user => {
-            console.log("Add a user: " + user);
-            return res.send({success: true});
-        })
-        .catch(err => {
-            console.error("Add user error, " + err);
-            return res.status(403).send({success: false});
-        })
-});
-
 // verifyToken
 //check and create user
 router.use((req, res, next) => {
