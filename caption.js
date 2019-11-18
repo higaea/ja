@@ -16,7 +16,7 @@ captionEndpoint.captionRequestTimer();
 captionEndpoint.captionResultTimer();
 
 var instagramEndpoint = require("./routes/instagramEndpoint.js");
-instagramEndpoint.commentTimer();
+// instagramEndpoint.commentTimer();
 
 let port = 8080;
 
