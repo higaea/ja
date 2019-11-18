@@ -39,6 +39,7 @@ app.all('*', function(req, res, next) {
 app.use("/public/web", express.static(path.join(__dirname, "/public/web"), {maxAge:10000}));
 app.use("/public/images", express.static(path.join(__dirname, "/public/images"), {maxAge:10000}));
 app.use("/public/dist", express.static(path.join(__dirname, "/public/dist")));
+app.use("/public/static", express.static(path.join(__dirname, "/public/static")));
 
 app.use('/api', api);
 
