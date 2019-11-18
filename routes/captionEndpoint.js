@@ -4,7 +4,7 @@ const Image = require('../models/image');
 
 const config = require('../config.json');
 
-const domain = "http://www.jarton.cn/";
+const domain = "https://www.jarton.cn/";
 
 var captionConfig = config.captionConfig;
 
