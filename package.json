@@ -15,7 +15,7 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
-    "file-type": "^12.1.0",
+    "file-type": "^16.5.4",
     "get-image-colors": "^2.0.0",
     "helmet": "^3.20.0",
     "image-average-color": "^1.0.0",
